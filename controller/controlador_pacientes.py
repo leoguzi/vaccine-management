@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from model.paciente import Paciente
 from view.tela_paciente import TelaPaciente
 

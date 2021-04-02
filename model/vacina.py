@@ -1,15 +1,16 @@
 class Vacina:
-    def __init__(self, tipo:str, fabricante: str, quantidade: int):
+    def __init__(self, tipo: str, fabricante: str, quantidade: int, codigo:int):
         self.__tipo = tipo
         self.__quantidade = quantidade
         self.__fabricante = fabricante
+        self.__codigo = codigo
 
     @property
     def tipo(self):
         return self.__tipo
-    
+
     @tipo.setter
-    def tipo(self, tipo:str):
+    def tipo(self, tipo: str):
         self.__tipo = tipo
     
     @property

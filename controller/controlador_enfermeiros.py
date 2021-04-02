@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from model.enfermeiro import Enfermeiro
 from view.tela_enfermeiro import TelaEnfermeiros
 
