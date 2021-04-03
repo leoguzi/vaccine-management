@@ -59,7 +59,16 @@ class ControladorPacientes():
 
     def retorna_menu_principal(self):
         pass
-
+    
+    def encontra_paciente_por_codigo(self, codigo):
+        indice = None
+        while indice is None:
+            for i in range(len(self.__pacientes)):
+                if self.__pacientes[i].codigo == codigo:
+                    indice = i
+            print("\nPaciente não encontrado.\n")
+            codigo = self.__tela_paciente.le_codigo()
+        return indice
 
     def abre_tela_pacientes(self):
         lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes, 0: self.retorna_menu_principal}

@@ -14,5 +14,8 @@ from controller.controlador_vacinas import ControladorVacina
 
 #controlador.abre_tela_pacientes()
 
-controlador = ControladorVacina(TelaVacina())
-controlador.inicia_tela_vacina()
+#controlador = ControladorVacina(TelaVacina())
+#controlador.inicia_tela_vacina()
+
+controlador = ControladorAgendamentos(TelaAgendamento())
+controlador.inicia_tela_agendamento()

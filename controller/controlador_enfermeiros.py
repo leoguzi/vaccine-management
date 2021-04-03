@@ -1,7 +1,6 @@
 import sys
 sys.path.append(".")
 
-from model.enfermeiro import Enfermeiro
 from view.tela_enfermeiro import TelaEnfermeiros
 
 class ControladorEnfermeiros():
@@ -10,7 +9,10 @@ class ControladorEnfermeiros():
         self.__tela_enfermeiros = tela_enfermeiros
         self.__enfermeiros = []
         self.__gera_codigo = int(100)
-    
+
+    def setEnfermeiro():
+        from model.enfermeiro import Enfermeiro
+            
     def adiciona_enfermeiro(self):
         print("Digite o nome do novo enfermeiro:")
         nome = self.__tela_enfermeiros.le_nome()
@@ -62,6 +64,16 @@ class ControladorEnfermeiros():
 
     def retorna_menu_principal(self):
         pass
+
+    def encontra_enfermeiro_por_codigo(self, codigo):
+        indice = None
+        while indice is None:
+            for i in range(len(self.__enfermeiros)):
+                if self.__enfermeiros[i].codigo == codigo:
+                    indice = i
+            print("\nEnfermeiro não encontrado.\n")
+            codigo = self.__tela_enfermeiros.le_codigo()
+        return indice 
 
     def abre_tela_enfermeiros(self):
         lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro, 0: self.retorna_menu_principal}
