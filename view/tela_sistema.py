@@ -1,6 +1,6 @@
-class TelaSistema:
+class TelaSistema():
 
-    def mosta_menu_principal(self):
+    def mostra_menu_principal(self):
         print("===========SISTEMA DE GERENCIAMENTO DE VACINAÇÃO===========")
         print("1 - Controle de Enfermeiros ")
         print("2 - Controle de pacientes")

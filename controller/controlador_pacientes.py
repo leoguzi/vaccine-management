@@ -1,14 +1,13 @@
+import os
 import sys
 sys.path.append(".")
-from controller.controlador_sistema import ControladorSistema
 from model.paciente import Paciente
 from view.tela_paciente import TelaPaciente
 
 class ControladorPacientes():
 
-    def __init__(self, controlador_sistema: ControladorSistema, tela_paciente: TelaPaciente):
+    def __init__(self, tela_paciente: TelaPaciente):
         self.__tela_paciente = tela_paciente
-        self.__controlador_sistema = controlador_sistema
         self.__pacientes = []
         self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
 
@@ -57,23 +56,26 @@ class ControladorPacientes():
             self.__pacientes[indice].idade = dados_paciente["idade"]
     # lista todos os pacientes cadastrados. 
     def lista_pacientes(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
         print("Lista de pacientes cadastrados: \n")
         for paciente in self.__pacientes:
             self.__tela_paciente.mostra_paciente({"codigo": paciente.codigo, "nome": paciente.nome, "idade": paciente.idade, "numero_doses": paciente.numero_doses})
    
-    #volta ao menu do posto.
-    def retorna_menu_principal(self):
-        self.__controlador_sistema.abre_menu_principal()
+    
 
     #inicia o menu de controle de pacientes e chama a função referente ao valor lido pela tela.
     def abre_tela_pacientes(self):
-        lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes, 0: self.__controlador_sistema.abre_menu_principal}
-
-        while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes}
+        continua = True
+        while continua:
             try:
                 valor_lido = self.__tela_paciente.opcoes_paciente()
-                if valor_lido >=0 and valor_lido<=4:
+                if valor_lido >=1 and valor_lido<=4:
                     lista_opcoes[valor_lido]()
+                elif valor_lido == 0:
+                    continua = False
+                    os.system('cls' if os.name == 'nt' else 'clear')
                 else:
                     raise ValueError
             except ValueError:

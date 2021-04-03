@@ -1,7 +1,7 @@
 class TelaEnfermeiros:
 
     def opcoes_enfermeiro(self):
-            print("\n========CONTROLE DE ENFERMEIROS=========")
+            print("========CONTROLE DE ENFERMEIROS=========")
             print("1 - Cadastrar novo enfermeiro")
             print("2 - Excluir enfermeiro")
             print("3 - Editar enfermeiro")

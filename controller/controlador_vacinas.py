@@ -1,3 +1,4 @@
+import os
 import sys
 sys.path.append(".")
 
@@ -44,6 +45,7 @@ class ControladorVacina:
             self.exclui_vacina(self,indice)
 
     def retorna_estoque(self): #função utilizada para retornar todo o estoque de vacinas do posto
+        os.system('cls' if os.name == 'nt' else 'clear')
         print("Lista de vacinas constantes no estoque:")
         for vacina in self.__lista_de_vacinas:
             dados_vacina = {"tipo":vacina.tipo, "fabricante":vacina.fabricante,"quantidade":vacina.quantidade,"codigo":vacina.codigo}
@@ -79,17 +81,17 @@ class ControladorVacina:
         else:
             return False
 
-    def retorna_menu_principal(self):
-        pass
-
     def inicia_tela_vacina(self):
-        lista_opcoes = {1:self.inclui_vacina,2:self.remove_doses_vacina, 3:self.retorna_estoque, 0:self.retorna_menu_principal}
-
-        while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        lista_opcoes = {1:self.inclui_vacina,2:self.remove_doses_vacina, 3:self.retorna_estoque}
+        continua = True
+        while continua:
             try:
                 opcao_escolhida = self.__tela_vacina.menu_vacina()
-                if 0 <= opcao_escolhida and opcao_escolhida <= 3:
+                if 1 <= opcao_escolhida and opcao_escolhida <= 3:
                     lista_opcoes[opcao_escolhida]()
+                elif opcao_escolhida == 0:
+                    continua = False
                 else:
                     raise ValueError
             except ValueError:

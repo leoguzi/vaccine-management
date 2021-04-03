@@ -1,7 +1,7 @@
 class TelaPaciente():
 
     def opcoes_paciente(self):
-        print("\n========CONTROLE DE PACIENTES=========")
+        print("========CONTROLE DE PACIENTES=========")
         print("1 - Cadastrar novo paciente")
         print("2 - Excluir paciente")
         print("3 - Editar paciente")

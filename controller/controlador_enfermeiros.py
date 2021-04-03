@@ -1,15 +1,14 @@
+import os
 import sys
 sys.path.append(".")
-
 from model.enfermeiro import Enfermeiro
 from view.tela_enfermeiro import TelaEnfermeiros
-from controller.controlador_sistema import ControladorSistema
 
-class ControladorEnfermeiros:
 
-    def __init__(self, controlador_sistema: ControladorSistema, tela_enfermeiros: TelaEnfermeiros):
+class ControladorEnfermeiros():
+
+    def __init__(self, tela_enfermeiros: TelaEnfermeiros):
         self.__tela_enfermeiros = tela_enfermeiros
-        self.__controlador_sistema = controlador_sistema
         self.__enfermeiros = []
         self.__gera_codigo = int(100)
     
@@ -25,6 +24,8 @@ class ControladorEnfermeiros:
             if novo_enfermeiro is not None:    
                 self.__enfermeiros.append(novo_enfermeiro)
                 self.__gera_codigo += 1
+                wait = input("Cadastrado com sucesso, pressione Enter para continuar!")
+            os.system('cls' if os.name == 'nt' else 'clear')
 
     def remove_enfermeiro(self):
         self.lista_enfermeiros()
@@ -62,16 +63,19 @@ class ControladorEnfermeiros:
     def lista_atendimentos_enfermeiro(self):
         pass
 
-    def retorna_menu_principal(self):
-        self.__controlador_sistema.abre_menu_principal()
-
     def abre_tela_enfermeiros(self):
-        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro, 0: self.__controlador_sistema.abre_menu_principal}
-        while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro}
+        continua = True
+        while continua:
             try:
                 valor_lido = self.__tela_enfermeiros.opcoes_enfermeiro()
-                if valor_lido >=0 and valor_lido<=5:
+                if valor_lido >= 1 and valor_lido <= 5:
+                    os.system('cls' if os.name == 'nt' else 'clear')
                     lista_opcoes[valor_lido]()
+                elif valor_lido == 0: 
+                    continua = False
+                    os.system('cls' if os.name == 'nt' else 'clear')
                 else:
                     raise ValueError
             except ValueError:

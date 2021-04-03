@@ -1,6 +1,6 @@
 class TelaVacina():
     def menu_vacina(self):
-        print("\n============== CONTROLE DE VACINAS ==============")
+        print("============== CONTROLE DE VACINAS ==============")
         print("1 - Incluir doses no estoque")
         print("2 - Remover doses do estoque")
         print("3 - Consultar estoque de vacinas disponíveis")
