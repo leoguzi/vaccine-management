@@ -28,4 +28,13 @@ class Vacina:
     @fabricante.setter
     def fabricante(self, fabricante:str):
         self.__fabricante = fabricante
+
+    @property
+    def codigo(self):
+        return self.__codigo
+    
+    @codigo.setter
+    def codigo(self, codigo: int):
+        self.__codigo = codigo
+
     
