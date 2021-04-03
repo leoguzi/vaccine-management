@@ -10,6 +10,9 @@ class ControladorVacina:
         self.__tela_vacina = tela_vacina
         self.__lista_de_vacinas = []
         self.__gera_codigo_vacina = int(500)
+    @property
+    def lista_de_vacinas(self):
+        return self.__lista_de_vacinas
 
     def inclui_vacina(self):
         nova_vacina = False
@@ -67,7 +70,7 @@ class ControladorVacina:
         for i in range (len(self.__lista_de_vacinas)):
             if self.__lista_de_vacinas[i].codigo == codigo:
                 indice = i
-        return(indice)
+        return indice
         
 
     

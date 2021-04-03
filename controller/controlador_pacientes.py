@@ -61,9 +61,16 @@ class ControladorPacientes():
         for paciente in self.__pacientes:
             self.__tela_paciente.mostra_paciente({"codigo": paciente.codigo, "nome": paciente.nome, "idade": paciente.idade, "numero_doses": paciente.numero_doses})
    
-    
+    def encontra_paciente_por_codigo(self, codigo):
+        indice = None
+        while indice is None:
+            for i in range(len(self.__pacientes)):
+                if self.__pacientes[i].codigo == codigo:
+                    indice = i
+            print("\nPaciente não encontrado.\n")
+            codigo = self.__tela_paciente.le_codigo()
+        return indice
 
-    #inicia o menu de controle de pacientes e chama a função referente ao valor lido pela tela.
     def abre_tela_pacientes(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes}
