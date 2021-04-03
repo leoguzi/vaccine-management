@@ -6,7 +6,7 @@ from model.paciente import Paciente
 from model.vacina import Vacina
 
 class Agendamento:
-    def __init__(self, paciente: Paciente, enfermeiro: Enfermeiro, vacina: Vacina, data_hora: str, conclusao: Boolean=False):
+    def __init__(self, paciente: Paciente, enfermeiro: Enfermeiro, vacina: Vacina, data_hora: str, conclusao: bool = False):
         if isinstance(paciente, Paciente):
             self.__paciente = paciente
         if isinstance(enfermeiro, Enfermeiro):

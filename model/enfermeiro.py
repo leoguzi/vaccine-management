@@ -6,7 +6,7 @@ class Enfermeiro(Pessoa):
     def __init__(self, nome: str, codigo: int):
         super().__init__(nome, codigo)
         self.__atendimentos = []
-    
+
     def inclui_atendimento(self, atendimento: Agendamento):
         if isinstance (atendimento, Agendamento):
             self.__atendimentos.append(atendimento)

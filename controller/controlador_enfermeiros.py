@@ -14,6 +14,7 @@ class ControladorEnfermeiros():
         from model.enfermeiro import Enfermeiro
             
     def adiciona_enfermeiro(self):
+        self.setEnfermeiro()
         print("Digite o nome do novo enfermeiro:")
         nome = self.__tela_enfermeiros.le_nome()
         novo_enfermeiro = None

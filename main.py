@@ -4,7 +4,8 @@ from view.tela_paciente import TelaPaciente
 from view.tela_enfermeiro import TelaEnfermeiros
 from view.tela_vacina import TelaVacina
 from controller.controlador_vacinas import ControladorVacina
-
+from controller.controlador_agendamentos import ControladorAgendamento
+from view.tela_agendamento import TelaAgendamento
 
 #controlador = ControladorEnfermeiros(TelaEnfermeiros())
 
@@ -17,5 +18,5 @@ from controller.controlador_vacinas import ControladorVacina
 #controlador = ControladorVacina(TelaVacina())
 #controlador.inicia_tela_vacina()
 
-controlador = ControladorAgendamentos(TelaAgendamento())
+controlador = ControladorAgendamento(TelaAgendamento())
 controlador.inicia_tela_agendamento()
