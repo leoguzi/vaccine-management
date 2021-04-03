@@ -4,7 +4,7 @@ class Paciente(Pessoa):
 
     def __init__(self, nome: str, idade: int, codigo: int):
         super().__init__(nome, codigo)
-        if isinstance(idade, int):
+        if isinstance(idade, int) and 0<idade<=150:
             self.__idade = idade
         else:
             raise Exception

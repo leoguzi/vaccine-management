@@ -1,3 +1,5 @@
+import sys
+sys.path.append(".")
 from controller.controlador_enfermeiros import ControladorEnfermeiros
 from controller.controlador_pacientes import ControladorPacientes
 from view.tela_sistema import TelaSistema

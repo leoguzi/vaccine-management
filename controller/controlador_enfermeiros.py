@@ -1,4 +1,7 @@
-from enfermeiro import Enfermeiro
+import sys
+sys.path.append(".")
+
+from model.enfermeiro import Enfermeiro
 from view.tela_enfermeiro import TelaEnfermeiros
 from controller.controlador_sistema import ControladorSistema
 
