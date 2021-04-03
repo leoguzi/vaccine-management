@@ -5,18 +5,16 @@ from controller.controlador_enfermeiros import ControladorEnfermeiros
 from controller.controlador_pacientes import ControladorPacientes
 from controller.controlador_vacinas import ControladorVacina
 from view.tela_agendamento import TelaAgendamento
+from model.agendamento import Agendamento
 
 class ControladorAgendamento():
-    def __init__(self, tela_agendamento:TelaAgendamento, controlador_paciente: ControladorPacientes, controlador_enfermeiro: ControladorEnfermeiro, controlador_vacina: ControladorVacina):
+    def __init__(self, tela_agendamento:TelaAgendamento, controlador_paciente: ControladorPacientes, controlador_enfermeiro: ControladorEnfermeiros, controlador_vacina: ControladorVacina):
         self.__tela_agendamento = tela_agendamento
         self.__controlador_paciente = controlador_paciente
         self.__controlador_enfermeiro = controlador_enfermeiro
         self.__controlador_vacina = controlador_vacina
         self.__lista_de_agendamentos = []
         self.__gera_codigo_agendamento = int(500)
-
-    def setAgendamento(self):
-        from model.agendamento import Agendamento
 
     def inserir_novo_agendamento(self):
         self.setAgendamento()
@@ -45,11 +43,11 @@ class ControladorAgendamento():
             print("Este paciente já tomou duas doses da vacina. Não é possível fazer um novo agendamento.")
         
         else:
-        novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,False)
-        self.__gera_codigo_agendamento += 1
-        self.__lista_de_agendamentos.append(novo_agendamento)
+            novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,False)
+            self.__gera_codigo_agendamento += 1
+            self.__lista_de_agendamentos.append(novo_agendamento)
     
-    def __encontra_agendamento_por_paciente(self,paciente):
+    def encontra_agendamento_por_paciente(self,paciente):
         indice = None
         for i in range(len(self.__lista_de_agendamentos)):
             if paciente == self.__lista_de_agendamentos[i].paciente:
