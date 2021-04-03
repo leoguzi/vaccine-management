@@ -1,13 +1,16 @@
+from controller.controlador_sistema import ControladorSistema
 from model.paciente import Paciente
 from view.tela_paciente import TelaPaciente
 
 class ControladorPacientes():
 
-    def __init__(self, tela_paciente: TelaPaciente):
+    def __init__(self, controlador_sistema: ControladorSistema, tela_paciente: TelaPaciente):
         self.__tela_paciente = tela_paciente
+        self.__controlador_sistema = controlador_sistema
         self.__pacientes = []
-        self.__gera_codigo = int(200)
+        self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
 
+    #Função que recebe um dicionario da tela_paciente com os dados lidos, tenta criar um paciente e adicionalo na lista
     def adiciona_paciente(self):
         print("Digite os dados do novo paciente: ")
         novo_paciente = None
@@ -19,8 +22,9 @@ class ControladorPacientes():
         finally:
             if isinstance(novo_paciente, Paciente):
                 self.__pacientes.append(novo_paciente)
-                self.__gera_codigo +=1
+                self.__gera_codigo +=1 #incrementa o codigo para o proximo paciente
 
+    #lista os pacientes, solicita ao usuário o código do paciente a ser removido e remove o paciente.
     def remove_paciente(self):
         removeu = False
         self.lista_pacientes()
@@ -36,6 +40,7 @@ class ControladorPacientes():
                 print("Removido!")
         except: print("Paciente não encontrado!")
 
+    #lista os pacientes, solicita o codigo do paciente a ser editado, solicita os novos dados, modifica na lista de pacientes.
     def edita_paciente(self):
         indice = None
         self.lista_pacientes()
@@ -48,18 +53,19 @@ class ControladorPacientes():
             dados_paciente = self.__tela_paciente.le_dados()
             self.__pacientes[indice].nome = dados_paciente["nome"]
             self.__pacientes[indice].idade = dados_paciente["idade"]
-
+    # lista todos os pacientes cadastrados. 
     def lista_pacientes(self):
         print("Lista de pacientes cadastrados: \n")
         for paciente in self.__pacientes:
             self.__tela_paciente.mostra_paciente({"codigo": paciente.codigo, "nome": paciente.nome, "idade": paciente.idade, "numero_doses": paciente.numero_doses})
-
+   
+    #volta ao menu do posto.
     def retorna_menu_principal(self):
-        pass
+        self.__controlador_sistema.abre_menu_principal()
 
-
+    #inicia o menu de controle de pacientes e chama a função referente ao valor lido pela tela.
     def abre_tela_pacientes(self):
-        lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes, 0: self.retorna_menu_principal}
+        lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.lista_pacientes, 0: self.__controlador_sistema.abre_menu_principal}
 
         while True:
             try:

@@ -1,10 +1,12 @@
-from model.enfermeiro import Enfermeiro
+from enfermeiro import Enfermeiro
 from view.tela_enfermeiro import TelaEnfermeiros
+from controller.controlador_sistema import ControladorSistema
 
-class ControladorEnfermeiros():
+class ControladorEnfermeiros:
 
-    def __init__(self, tela_enfermeiros: TelaEnfermeiros):
+    def __init__(self, controlador_sistema: ControladorSistema, tela_enfermeiros: TelaEnfermeiros):
         self.__tela_enfermeiros = tela_enfermeiros
+        self.__controlador_sistema = controlador_sistema
         self.__enfermeiros = []
         self.__gera_codigo = int(100)
     
@@ -58,14 +60,14 @@ class ControladorEnfermeiros():
         pass
 
     def retorna_menu_principal(self):
-        pass
+        self.__controlador_sistema.abre_menu_principal()
 
     def abre_tela_enfermeiros(self):
-        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro, 0: self.retorna_menu_principal}
+        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro, 0: self.__controlador_sistema.abre_menu_principal}
         while True:
             try:
                 valor_lido = self.__tela_enfermeiros.opcoes_enfermeiro()
-                if valor_lido >=0 and valor_lido<=4:
+                if valor_lido >=0 and valor_lido<=5:
                     lista_opcoes[valor_lido]()
                 else:
                     raise ValueError
