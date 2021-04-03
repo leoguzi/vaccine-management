@@ -25,5 +25,11 @@ class TelaAgendamento():
     def ler_data_hora(self):
         data_hora = input("Informa a data e horário do atendimento no formato: DD/MM/AA hh:mm: ")
         return data_hora
+
+    def ler_codigo(self):
+        codigo = input("Código: ")
+        return codigo
+    
+    
     
     
