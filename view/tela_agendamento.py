@@ -6,6 +6,7 @@ class TelaAgendamento():
         print("2 - Excluir agendamento")
         print("3 - Editar agendamento")
         print("4 - Listar agendamentos")
+        print("5 - Concluir agendamento")
         print("0 - Voltar ao menu principal")
 
         opcao = int(input("\nDigite o numero da opção: "))
@@ -13,12 +14,10 @@ class TelaAgendamento():
         return opcao
     
     def ler_paciente(self):
-        print("\n=========SELEÇÃO DE PACIENTE=========\n")
         paciente = int(input("Informe o código do paciente para agendar o atendimento: "))
         return paciente
 
     def ler_enfermeiro(self):
-        print("\n=========SELEÇÃO DE ENFERMEIRO=========\n")
         enfermeiro = int(input("Informe o código do enfermeiro que realizará o atendimento: "))
         return enfermeiro
 
@@ -27,8 +26,28 @@ class TelaAgendamento():
         return data_hora
 
     def ler_codigo(self):
-        codigo = input("Código: ")
+        codigo = int(input("Código: "))
         return codigo
+    
+    def ler_vacina(self):
+        codigo_vacina = int(input("Informe o código da vacina: "))
+        return codigo_vacina
+    
+    def listar_agendamentos(self,dados_agendamentos):
+        print("--------------------")
+        print("Código: ",dados_agendamentos["codigo"])
+        print("Paciente: ",dados_agendamentos["paciente"])
+        print("Enfermeiro: ",dados_agendamentos["enfermeiro"])
+        print("Vacina: ",dados_agendamentos["vacina"])
+        print("Concluído (True or False): ",dados_agendamentos["conclusao"])
+    
+    def selecionar_lista_agendamentos(self):
+        print("\nSelecione os agendamentos que você quer listar:\n")
+        print("1 - Listar agendamentos em aberto")
+        print("2 - Listar agendamentos concluídos")
+        print("3 - Listar todos os agendamentos")
+        opcao = int(input("\nInforme a opção escolhida: \n"))
+        return opcao
     
     
     

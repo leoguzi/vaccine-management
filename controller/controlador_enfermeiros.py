@@ -11,13 +11,12 @@ class ControladorEnfermeiros():
         self.__tela_enfermeiros = tela_enfermeiros
         self.__enfermeiros = []
         self.__gera_codigo = int(100)
+    @property
+    def enfermeiros(self):
+        return self.__enfermeiros
 
-    def setEnfermeiro():
-        from model.enfermeiro import Enfermeiro
-            
     def adiciona_enfermeiro(self):
-        self.setEnfermeiro()
-        print("Digite o nome do novo enfermeiro:")
+        print("Digite o nome do enfermeiro:")
         nome = self.__tela_enfermeiros.le_nome()
         novo_enfermeiro = None
         try:
@@ -28,63 +27,61 @@ class ControladorEnfermeiros():
             if novo_enfermeiro is not None:    
                 self.__enfermeiros.append(novo_enfermeiro)
                 self.__gera_codigo += 1
-                wait = input("Cadastrado com sucesso, pressione Enter para continuar!")
+                return(novo_enfermeiro)
+                wait = input("Cadastrado ou alterado com sucesso, pressione Enter para continuar!")
             os.system('cls' if os.name == 'nt' else 'clear')
 
     def remove_enfermeiro(self):
-        self.lista_enfermeiros()
-        codigo = self.__tela_enfermeiros.le_codigo()
-        removeu = False
         try:
-            for enfermeiro in self.__enfermeiros:
-                if enfermeiro.codigo == codigo:
-                    self.__enfermeiros.remove(enfermeiro)
-                    removeu = True 
-            if not removeu:
-                raise Exception
-            else:
-                print("Removido!")
-        except: print("Enfermeiro não encontrado!")
+            len(self.__enfermeiros) > 0
+        except:
+            print("\nNão é possível excluir um enfermeiro, pois não há enfermeiros cadastrados neste posto.\n")
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            print("\nInforme o código do enfermeiro que você deseja excluir.\n")
+            self.lista_enfermeiros()
+            codigo = self.__tela_enfermeiros.le_codigo()
+            enfermeiro = self.encontra_enfermeiro_por_codigo(codigo)
+            self.__enfermeiros.remove(enfermeiro)
+            print("Solicitação efetivada com sucesso!")
 
     def edita_enfermeiro(self):
-        indice = None
-        self.lista_enfermeiros()
-        codigo = self.__tela_enfermeiros.le_codigo()
-        for i in range(len(self.__enfermeiros)):
-            if self.__enfermeiros[i].codigo == codigo:
-                indice = i
-        if indice is not None:
-            print("Digite o nome corrigido:")
-            nome_enfermeiro = self.__tela_enfermeiros.le_nome()
-            self.__enfermeiros[indice].nome = nome_enfermeiro
+        try:
+            len(self.__enfermeiros) > 0
+        except:
+            print("Não é possível alterar um enfermeiro, pois não há nenhum enfermeiro cadastrado neste posto")
+        else:
+            print("\nInforme o código do enfermeiro que você deseja alterar\n")
+            self.lista_enfermeiros()
+            codigo = self.__tela_enfermeiros.le_codigo()
+            enfermeiro = self.encontra_enfermeiro_por_codigo(codigo)
+            enfermeiro_auxiliar = self.adiciona_enfermeiro()
+            enfermeiro.nome = enfermeiro_auxiliar.nome
+            self.__enfermeiros.remove(enfermeiro_auxiliar)
 
     def lista_enfermeiros(self):
         print("Lista de enfermeiros cadastrados: \n")
         for enfermeiro in self.__enfermeiros:
-            atendimentos = enfermeiro.retorna_atendimentos()
-            self.__tela_enfermeiros.mostra_enfermeiro({"codigo": enfermeiro.codigo, "nome": enfermeiro.nome, "n_atendimentos": len(atendimentos)})
+            self.__tela_enfermeiros.mostra_enfermeiro({"codigo": enfermeiro.codigo, "nome": enfermeiro.nome})
     
-    def lista_atendimentos_enfermeiro(self):
-        pass
-
     def encontra_enfermeiro_por_codigo(self, codigo):
-        indice = None
-        while indice is None:
+        enfermeiro = None
+        while enfermeiro is None:
             for i in range(len(self.__enfermeiros)):
                 if self.__enfermeiros[i].codigo == codigo:
-                    indice = i
-            print("\nEnfermeiro não encontrado.\n")
+                    enfermeiro = self.__enfermeiros[i]
+                    return enfermeiro
+            print("\nEnfermeiro não encontrado. Informe um código válido.\n")
             codigo = self.__tela_enfermeiros.le_codigo()
-        return indice 
 
     def abre_tela_enfermeiros(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros, 5: self.lista_atendimentos_enfermeiro}
+        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros}
         continua = True
         while continua:
             try:
                 valor_lido = self.__tela_enfermeiros.opcoes_enfermeiro()
-                if valor_lido >= 1 and valor_lido <= 5:
+                if valor_lido >= 1 and valor_lido <= 4:
                     os.system('cls' if os.name == 'nt' else 'clear')
                     lista_opcoes[valor_lido]()
                 elif valor_lido == 0: 

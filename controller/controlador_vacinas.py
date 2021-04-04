@@ -10,6 +10,7 @@ class ControladorVacina:
         self.__tela_vacina = tela_vacina
         self.__lista_de_vacinas = []
         self.__gera_codigo_vacina = int(500)
+
     @property
     def lista_de_vacinas(self):
         return self.__lista_de_vacinas
@@ -20,6 +21,8 @@ class ControladorVacina:
         dados_vacina = self.__tela_vacina.ler_dados()
         for i in range (len(self.__lista_de_vacinas)):
             if (dados_vacina["tipo"] == self.__lista_de_vacinas[i].tipo and dados_vacina["fabricante"] == self.__lista_de_vacinas[i].fabricante):
+                print("vacina_nova: ",type(dados_vacina["quantidade"]))
+                print("vacina_antigo: ",type(self.__lista_de_vacinas[i].quantidade))
                 self.__lista_de_vacinas[i].quantidade += dados_vacina["quantidade"]
                 print('\nEsta vacina já está cadastrada. As novas doses foram adicionadas ao estoque. \n Agora, existem ',self.__lista_de_vacinas[i].quantidade,' doses desta vacina no sistema.')
                 nova_vacina = True
@@ -27,25 +30,22 @@ class ControladorVacina:
             nova_vacina = Vacina(dados_vacina["tipo"],dados_vacina["fabricante"],dados_vacina["quantidade"], self.__gera_codigo_vacina)
             self.__gera_codigo_vacina += 1
             self.__lista_de_vacinas.append(nova_vacina)
+
     def remove_doses_vacina(self):
         removeu = False
         self.retorna_estoque()
-        codigo = self.__tela_vacina.seleciona_vacina()
-        print(self)
-        indice = self.encontra_indice_por_codigo(codigo)
-        if indice is not None:
-            quantidade_inicial = self.__lista_de_vacinas[indice].quantidade
-            print("Vacina encontrada.\n Existem ",quantidade_inicial," doses desta vacina no estoque. Informe a quantidade que deseja remover")
+        codigo = self.__tela_vacina.ler_codigo()
+        vacina = self.encontra_vacina_por_codigo(codigo)
+        quantidade_inicial = vacina.quantidade
+        print("Vacina encontrada.\n Existem ",quantidade_inicial," doses desta vacina no estoque. Informe a quantidade que deseja remover")
+        quantidade = self.__tela_vacina.ler_quantidade()
+        while quantidade_inicial < quantidade:
+            print("Informe uma quantidade igual ou inferior a ",quantidade_inicial)
             quantidade = self.__tela_vacina.ler_quantidade()
-            while quantidade_inicial < quantidade:
-                print("Informe uma quantidade igual ou inferior a ",quantidade_inicial)
-                quantidade = self.__tela_vacina.ler_quantidade()
-            self.__lista_de_vacinas[indice].quantidade -= quantidade
-            print("Foram removidas ",quantidade," doses do estoque. \n Restam ",self.__lista_de_vacinas[indice].quantidade," doses desta vacina no estoque.")
-        else:
-            print("Não foi possível remover esta vacina. Informe um código válido.")
-        if self.__lista_de_vacinas[indice].quantidade == 0: 
-            self.exclui_vacina(self,indice)
+        vacina.quantidade -= quantidade
+        print("Foram removidas ",quantidade," doses do estoque. \n Restam ",vacina.quantidade," doses desta vacina no estoque.")
+        if vacina.quantidade == 0: 
+            self.exclui_vacina(vacina)
 
     def retorna_estoque(self): #função utilizada para retornar todo o estoque de vacinas do posto
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -55,31 +55,29 @@ class ControladorVacina:
             self.__tela_vacina.listar_vacinas(dados_vacina)
     
     def remove_dose_aplicada_do_estoque(codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
-        indice = self.encontra_indice_por_codigo(self,codigo)
-        if indice is not None:
-            self.__lista_de_vacinas[indice].quantidade -= 1
-        if self.__lista_de_vacinas[indice].quantidade == 0:
-            self.exclui_vacina(self,indice)
+        vacina = self.encontra_vacina_por_codigo(codigo)
+        vacina.quantidade -= 1
+        if vacina.quantidade == 0:
+            self.exclui_vacina(vacina)
     
-    def exclui_vacina(self,i):
-        self.__lista_de_vacinas.remove(self.__lista_de_vacinas[i])
+    def exclui_vacina(self,vacina):
+        self.__lista_de_vacinas.remove(vacina)
         return(self.__lista_de_vacinas)
 
-    def encontra_indice_por_codigo(self, codigo):
-        indice = None
-        for i in range (len(self.__lista_de_vacinas)):
-            if self.__lista_de_vacinas[i].codigo == codigo:
-                indice = i
-        return indice
-        
-
-    
-    def consulta_dose_estoque(self,codigo, n_doses): #função utilizada para consultar o estoque de uma vacina específica, para saber se é possivel agendar um atendimento de primeira ou segunda dose
-        n_estoque = 0
-        indice = self.encontra_indice_por_codigo(self,codigo)
-        if indice is not None:
-            n_estoque = self.__lista_de_vacinas[i].quantidade
-        if n_estoque >= n_doses:
+    def encontra_vacina_por_codigo(self, codigo):
+        vacina = None
+        while vacina is None:
+            for i in range (len(self.__lista_de_vacinas)):
+                if self.__lista_de_vacinas[i].codigo == codigo:
+                    vacina = self.__lista_de_vacinas[i]
+                    return vacina
+            print("Vacina não encontrada. Informe um código válido.")
+            codigo = self.__tela_vacina.ler_codigo()
+         
+    def consulta_dose_estoque(self,codigo, n_doses_necessarias): #função utilizada para consultar o estoque de uma vacina específica, para saber se é possivel agendar um atendimento de primeira ou segunda dose
+        vacina = self.encontra_vacina_por_codigo(codigo)
+        n_estoque = vacina.quantidade
+        if n_estoque >= n_doses_necessarias:
             return True
         else:
             return False

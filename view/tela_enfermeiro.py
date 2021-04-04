@@ -6,7 +6,6 @@ class TelaEnfermeiros:
             print("2 - Excluir enfermeiro")
             print("3 - Editar enfermeiro")
             print("4 - Listar enfermeiros")
-            print("5 - Listar atendimentos")
             print("0 - Voltar ao menu principal")
 
             opcao = int(input("\nDigite o numero da opção: "))
@@ -25,7 +24,7 @@ class TelaEnfermeiros:
         return codigo
 
     def mostra_enfermeiro(self, dados_enfermeiro):
+        print("------------------------------")
         print("Codigo: ", dados_enfermeiro["codigo"])
         print("Nome: ", dados_enfermeiro["nome"])
-        print("Numero de atendimentos: ", dados_enfermeiro["n_atendimentos"])
         print("------------------------------")

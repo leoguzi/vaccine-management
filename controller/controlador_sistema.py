@@ -18,7 +18,7 @@ class ControladorSistema():
         self.__controlador_pacientes = ControladorPacientes(TelaPaciente())
         self.__controlador_enfermeiros = ControladorEnfermeiros(TelaEnfermeiros())
         self.__controlador_vacinas = ControladorVacina(TelaVacina())
-        self.__controlador_agendamento(TelaAgendamento(), self.__controlador_pacientes, self.__controlador_enfermeiros, self.__controlador_vacinas)
+        self.__controlador_agendamento = ControladorAgendamento(TelaAgendamento(), self.__controlador_pacientes, self.__controlador_enfermeiros, self.__controlador_vacinas)
     def encerra_sistema(self):
         exit(0)
 

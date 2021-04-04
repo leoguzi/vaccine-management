@@ -1,3 +1,5 @@
+import os
+
 class TelaVacina():
     def menu_vacina(self):
         print("============== CONTROLE DE VACINAS ==============")
@@ -12,17 +14,22 @@ class TelaVacina():
         print("\nInforme os dados solicitados abaixo\n")
         tipo = input("Tipo de Vacina: ")
         fabricante = input("Fabricante: ")
-        quantidade = int(input("Quantidade de doses: "))
+        quantidade = self.ler_quantidade()
         return{"tipo":tipo,"fabricante":fabricante,"quantidade":quantidade}
     
-    def seleciona_vacina(self):
-        print("\nInforme o código da vacina")
+    def ler_codigo(self):
         codigo = int(input("Código: "))
         return codigo
 
     def ler_quantidade(self):
-        quantidade = int(input("Quantidade: "))
-        return quantidade
+        quantidade = int(input("Quantidade de doses: "))
+        try:
+            quantidade > 0
+        except:
+            print("Não foi possível continuar a solicitação. A quantidade deve ser um número maior que zero.")
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            return quantidade
     
     def listar_vacinas(self, dados_vacina):
         print("===============================")

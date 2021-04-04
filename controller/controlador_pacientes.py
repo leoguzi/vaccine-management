@@ -10,6 +10,9 @@ class ControladorPacientes():
         self.__tela_paciente = tela_paciente
         self.__pacientes = []
         self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
+    @property
+    def pacientes(self):
+        return self.__pacientes
 
     #Função que recebe um dicionario da tela_paciente com os dados lidos, tenta criar um paciente e adicionalo na lista
     def adiciona_paciente(self):
@@ -19,41 +22,45 @@ class ControladorPacientes():
             dados_paciente = self.__tela_paciente.le_dados()
             novo_paciente = Paciente(dados_paciente["nome"], dados_paciente["idade"], self.__gera_codigo)
         except: 
-            print("Não criou o paciente! Dados Inválidos. O ano deve ser um número inteiro.")
+            print("Não criou o paciente! Dados Inválidos. A idade deve ser um inteiro entre 0 e 150.")
         finally:
             if isinstance(novo_paciente, Paciente):
                 self.__pacientes.append(novo_paciente)
                 self.__gera_codigo +=1 #incrementa o codigo para o proximo paciente
+                return(novo_paciente)
 
     #lista os pacientes, solicita ao usuário o código do paciente a ser removido e remove o paciente.
     def remove_paciente(self):
-        removeu = False
-        self.lista_pacientes()
-        codigo = self.__tela_paciente.le_codigo()
         try:
-            for paciente in self.__pacientes:
-                if paciente.codigo == codigo:
-                    self.__pacientes.remove(paciente)
-                    removeu = True 
-            if not removeu:
-                raise Exception
-            else:
-                print("Removido!")
-        except: print("Paciente não encontrado!")
+            len(self.__pacientes) > 0
+        except:
+            print("\nNão é possível excluir um paciente, pois não há pacientes cadastrados neste posto.\n")
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            print("\nInforme o código do paciente que você deseja excluir.\n")
+            self.lista_pacientes()
+            codigo = self.__tela_paciente.le_codigo()
+            paciente = self.encontra_paciente_por_codigo(codigo)
+            self.__pacientes.remove(paciente)
+            print("\nSolicitação efetivada com sucesso!\n")
 
     #lista os pacientes, solicita o codigo do paciente a ser editado, solicita os novos dados, modifica na lista de pacientes.
     def edita_paciente(self):
-        indice = None
-        self.lista_pacientes()
-        codigo = self.__tela_paciente.le_codigo()
-        for i in range(len(self.__pacientes)):
-            if self.__pacientes[i].codigo == codigo:
-                indice = i
-        if indice is not None:
-            print("Digite os novos dados:")
-            dados_paciente = self.__tela_paciente.le_dados()
-            self.__pacientes[indice].nome = dados_paciente["nome"]
-            self.__pacientes[indice].idade = dados_paciente["idade"]
+        try:
+            len(self.__pacientes) > 0
+        except:
+            print("\nNão é possível alterar um paciente, pois não há pacientes cadastrados neste posto.\n")
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            print("\nInforme o código do paciente que você deseja alterar\n")
+            codigo = self.__tela_paciente.le_codigo()
+            paciente = self.encontra_paciente_por_codigo(codigo)
+            paciente_auxiliar = self.adiciona_paciente()
+            paciente.nome = paciente_auxiliar.nome
+            paciente.idade = paciente_auxiliar.idade
+            self.__pacientes.remove(paciente_auxiliar)
+
+
     # lista todos os pacientes cadastrados. 
     def lista_pacientes(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -62,14 +69,23 @@ class ControladorPacientes():
             self.__tela_paciente.mostra_paciente({"codigo": paciente.codigo, "nome": paciente.nome, "idade": paciente.idade, "numero_doses": paciente.numero_doses})
    
     def encontra_paciente_por_codigo(self, codigo):
-        indice = None
-        while indice is None:
+        paciente = None
+        while paciente is None:
             for i in range(len(self.__pacientes)):
                 if self.__pacientes[i].codigo == codigo:
-                    indice = i
+                    paciente = self.__pacientes[i]
+                    return paciente
             print("\nPaciente não encontrado.\n")
             codigo = self.__tela_paciente.le_codigo()
-        return indice
+    
+    def vacina_paciente(self,codigo):
+        paciente_vacinado = encontra_paciente_por_codigo(codigo)
+        try:
+            paciente_vacinado.numero_doses <= 2
+        except:
+            print("\nNão é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.\n")
+        else:
+            paciente_vacinado.numero_doses += 1
 
     def abre_tela_pacientes(self):
         os.system('cls' if os.name == 'nt' else 'clear')

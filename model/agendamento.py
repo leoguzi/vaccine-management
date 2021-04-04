@@ -6,7 +6,7 @@ from model.paciente import Paciente
 from model.vacina import Vacina
 
 class Agendamento:
-    def __init__(self, paciente: Paciente, enfermeiro: Enfermeiro, vacina: Vacina, data_hora: str, conclusao: bool = False):
+    def __init__(self, paciente: Paciente, enfermeiro: Enfermeiro, vacina: Vacina, data_hora: str, dose:int, codigo:int, conclusao: bool = False):
         if isinstance(paciente, Paciente):
             self.__paciente = paciente
         if isinstance(enfermeiro, Enfermeiro):
@@ -15,6 +15,9 @@ class Agendamento:
             self.__vacina = vacina
         self.__data_hora = data_hora
         self.__conclusao = conclusao
+        self.__dose = dose
+        self.__codigo = codigo
+    
     
     @property
     def paciente(self):
@@ -53,3 +56,17 @@ class Agendamento:
     @conclusao.setter
     def conclusao(self,conclusao):
         self.__conclusao = conclusao
+    
+    @property
+    def dose(self):
+        return self.__dose
+    @dose.setter
+    def dose(self,dose):
+        self.__dose = dose
+    
+    @property
+    def codigo(self):
+        return self.__codigo
+    @codigo.setter
+    def codigo(self, codigo):
+        self.__codigo = codigo
