@@ -53,7 +53,7 @@ class ControladorAgendamento():
                 print("\n========== SELEÇÃO DE VACINA ==========\n")
                 self.__controlador_vacina.retorna_estoque()
                 codigo_da_vacina = self.__tela_agendamento.ler_vacina()
-                vacina = self.__controlador_vacina.lista_de_vacinas[self.__controlador_vacina.encontra_indice_por_codigo(codigo_da_vacina)]
+                vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
                 dose = 1
                 n_doses_necessarias = 2
             if n_doses == 1:
@@ -71,6 +71,7 @@ class ControladorAgendamento():
                 self.__lista_de_agendamentos.append(novo_agendamento)
                 self.__lista_de_agendamentos_em_aberto.append(novo_agendamento)
                 print("\nAgendamento cadastrado ou alterado com sucesso!\n")
+                return novo_agendamento
         
     def encontra_agendamento_por_paciente(self,paciente):
         for i in range(len(self.__lista_de_agendamentos)):
@@ -79,51 +80,50 @@ class ControladorAgendamento():
                 return agendamento
     
     def encontra_agendamento_por_codigo(self,codigo):
-        indice = None
-        while indice is None:
+        agendamento = None
+        while agendamento is None:
             for i in range(len(self.__lista_de_agendamentos)):
-                print("codigo_lista: ",self.__lista_de_agendamentos[i].codigo)
-                print("codigo_informado: ",codigo)
                 if codigo == self.__lista_de_agendamentos[i].codigo:
-                    indice = i
-                    return indice
+                    agendamento = self.__lista_de_agendamentos[i]
+                    return agendamento
             print("Agendamento não encontrado. Informe um código válido.")
             codigo = self.__tela_agendamento.ler_codigo()
 
     
     def edita_agendamento(self):
-        try:
-            len(self.__lista_de_agendamentos_em_aberto) > 0
-        except:
+        if len(self.__lista_de_agendamentos_em_aberto) == 0:
             print("Não é possível alterar um agendamento, pois não há agendamentos em aberto cadastrados neste posto, e não é possível alterar agendamento concluídos.")
         else:
             self.lista_agendamentos_em_aberto()
-            print("\nInforme o código do agendamento que você sejeja alterar\n")
+            print("\nInforme o código do agendamento que você deseja alterar\n")
             codigo = self.__tela_agendamento.ler_codigo()
             agendamento = self.encontra_agendamento_por_codigo(codigo)
-            try:
-                agendamento.conclusao = False
-            except:
-                print("Não é possível alterar um agendamento concluído")
+            if agendamento.conclusao:
+                return print("Não é possível alterar um agendamento concluído")
             else:
+                agendamento.paciente = None
                 print("\nInforme os novos dados para o agendamento.\n")
                 agendamento_auxiliar = self.inserir_novo_agendamento()
                 agendamento.paciente = agendamento_auxiliar.paciente
                 agendamento.enfermeiro = agendamento_auxiliar.enfermeiro
                 agendamento.data_hora = agendamento_auxiliar.data_hora
                 agendamento.vacina = agendamento_auxiliar.vacina
+                self.__lista_de_agendamentos_em_aberto.remove(agendamento_auxiliar)
+                self.__lista_de_agendamentos.remove(agendamento_auxiliar)
 
     def excluir_agendamento(self):
-        try:
-            len(self.__lista_de_agendamentos) > 0
-        except:
-            print("Não é possível excluir nenhum agendamento, pois não há nenhum agendamento cadastrado no posto.")
+        if len(self.__lista_de_agendamentos) == 0:
+            return print("Não é possível excluir nenhum agendamento, pois não há nenhum agendamento cadastrado no posto.")
         else:
             print("Informe o código do agendamento que você deseja excluir.")
             self.lista_todos_agendamentos()
             codigo = self.__tela_agendamento.ler_codigo()
             agendamento = self.encontra_agendamento_por_codigo(codigo)
             self.__lista_de_agendamentos.remove(agendamento)
+            if agendamento.conclusao:
+                self.__lista_de_agendamentos_concluidos.remove(agendamento)
+            else:
+                self.__lista_de_agendamentos_em_aberto.remove(agendamento)
             print("\nSolicitação efetivada com sucesso!\n")
     
     def lista_agendamentos(self):
@@ -148,19 +148,18 @@ class ControladorAgendamento():
         self.lista_agendamentos_em_aberto()
         print("Informe o código do agendamento que você deseja concluir")
         codigo = self.__tela_agendamento.ler_codigo()
-        i = self.encontra_agendamento_por_codigo(codigo)
+        agendamento = self.encontra_agendamento_por_codigo(codigo)
         try:
-            self.__lista_de_agendamentos[i].conclusao is False
+            agendamento.conclusao is False
         except:
             print("Este agendamento já foi concluído anteriormente. Selecione um agendamento em aberto para concluir.")
         else:
-            agendamento_selecionado = self.__lista_de_agendamentos[i]
-            agendamento_selecionado.conclusao = True
-            self.__lista_de_agendamentos_em_aberto.remove(self.__lista_de_agendamentos[i])
-            self.__lista_de_agendamentos_concluidos.append(self.__lista_de_agendamentos[i])
-            codigo_vacina = self.__lista_de_agendamentos[i].vacina.codigo
+            agendamento.conclusao = True
+            self.__lista_de_agendamentos_em_aberto.remove(agendamento)
+            self.__lista_de_agendamentos_concluidos.append(agendamento)
+            codigo_vacina = agendamento.vacina.codigo
             self.__controlador_vacina.remove_dose_aplicada_do_estoque(codigo_vacina)
-            codigo_paciente = self.__lista_de_agendamentos[i].paciente.codigo
+            codigo_paciente = agendamento.paciente.codigo
             self.__controlador_paciente.vacina_paciente(codigo_paciente)
 
     def lista_agendamentos_em_aberto(self):

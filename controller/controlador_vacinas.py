@@ -21,8 +21,6 @@ class ControladorVacina:
         dados_vacina = self.__tela_vacina.ler_dados()
         for i in range (len(self.__lista_de_vacinas)):
             if (dados_vacina["tipo"] == self.__lista_de_vacinas[i].tipo and dados_vacina["fabricante"] == self.__lista_de_vacinas[i].fabricante):
-                print("vacina_nova: ",type(dados_vacina["quantidade"]))
-                print("vacina_antigo: ",type(self.__lista_de_vacinas[i].quantidade))
                 self.__lista_de_vacinas[i].quantidade += dados_vacina["quantidade"]
                 print('\nEsta vacina já está cadastrada. As novas doses foram adicionadas ao estoque. \n Agora, existem ',self.__lista_de_vacinas[i].quantidade,' doses desta vacina no sistema.')
                 nova_vacina = True
@@ -54,7 +52,7 @@ class ControladorVacina:
             dados_vacina = {"tipo":vacina.tipo, "fabricante":vacina.fabricante,"quantidade":vacina.quantidade,"codigo":vacina.codigo}
             self.__tela_vacina.listar_vacinas(dados_vacina)
     
-    def remove_dose_aplicada_do_estoque(codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
+    def remove_dose_aplicada_do_estoque(self,codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
         vacina = self.encontra_vacina_por_codigo(codigo)
         vacina.quantidade -= 1
         if vacina.quantidade == 0:

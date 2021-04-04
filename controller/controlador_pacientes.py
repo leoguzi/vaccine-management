@@ -10,9 +10,11 @@ class ControladorPacientes():
         self.__tela_paciente = tela_paciente
         self.__pacientes = []
         self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
+    
     @property
     def pacientes(self):
         return self.__pacientes
+
 
     #Função que recebe um dicionario da tela_paciente com os dados lidos, tenta criar um paciente e adicionalo na lista
     def adiciona_paciente(self):
@@ -53,6 +55,7 @@ class ControladorPacientes():
             os.system('cls' if os.name == 'nt' else 'clear')
         else:
             print("\nInforme o código do paciente que você deseja alterar\n")
+            self.lista_pacientes()
             codigo = self.__tela_paciente.le_codigo()
             paciente = self.encontra_paciente_por_codigo(codigo)
             paciente_auxiliar = self.adiciona_paciente()
@@ -79,7 +82,7 @@ class ControladorPacientes():
             codigo = self.__tela_paciente.le_codigo()
     
     def vacina_paciente(self,codigo):
-        paciente_vacinado = encontra_paciente_por_codigo(codigo)
+        paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
         try:
             paciente_vacinado.numero_doses <= 2
         except:

@@ -24,16 +24,9 @@ class Paciente(Pessoa):
     @property
     def numero_doses(self):
         return self.__numero_doses
+    @numero_doses.setter
+    def numero_doses(self,numero_doses):
+        self.__numero_doses = numero_doses
     
-    def recebe_dose(self):
-        if self.__numero_doses < 2:
-            self.__numero_doses +=1
-        else:
-            raise Exception
-    
-    def remove_dose(self):
-        if self.__numero_doses > 0:
-            self.__numero_doses -=1
-        else:
-            raise Exception
+
 
