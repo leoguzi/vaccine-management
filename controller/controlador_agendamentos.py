@@ -44,34 +44,37 @@ class ControladorAgendamento():
             if (paciente == self.__lista_de_agendamentos[i].paciente and self.__lista_de_agendamentos[i].conclusao == False):
                 return print("Este paciente já possui um agendamento em aberto. Conclua ou exclua o agendamento existente antes de cadastrar outro.")
         try:
-            n_doses >= 0 and n_doses < 2
+            if n_doses >= 0 and n_doses < 2:
+                if n_doses == 0:
+                    print("\n========== SELEÇÃO DE VACINA ==========\n")
+                    self.__controlador_vacina.retorna_estoque()
+                    codigo_da_vacina = self.__tela_agendamento.ler_vacina()
+                    vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
+                    dose = 1
+                    n_doses_necessarias = 2
+                if n_doses == 1:
+                    agendamento = self.encontra_agendamento_por_paciente(paciente) #erro de digitação corrigido aqui! (estava com .__, mas é um metodo desta classe, léo)
+                    vacina = agendamento.vacina
+                    dose = 2
+                    n_doses_necessarias = 1
+                try:
+                    if self.__controlador_vacina.consulta_dose_estoque(vacina.codigo,n_doses_necessarias):
+                        novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo_agendamento,False)
+                        self.__gera_codigo_agendamento += 1
+                        self.__lista_de_agendamentos.append(novo_agendamento)
+                        self.__lista_de_agendamentos_em_aberto.append(novo_agendamento)
+                        print("\nAgendamento cadastrado ou alterado com sucesso!\n")
+                        return novo_agendamento
+                    else:    
+                        raise Exception
+                except:
+                    print("Não é possível realizar este agendamento, pois não há doses de vacinas disponíveis no estoque.")
+            else:    
+                raise Exception
         except:
             print("Este paciente já tomou duas doses da vacina. Não é possível fazer um novo agendamento.")
-        
-        else:
-            if n_doses == 0:
-                print("\n========== SELEÇÃO DE VACINA ==========\n")
-                self.__controlador_vacina.retorna_estoque()
-                codigo_da_vacina = self.__tela_agendamento.ler_vacina()
-                vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
-                dose = 1
-                n_doses_necessarias = 2
-            if n_doses == 1:
-                agendamento = self.encontra_agendamento_por_paciente(paciente) #erro de digitação corrigido aqui! (estava com .__, mas é um metodo desta classe, léo)
-                vacina = agendamento.vacina
-                dose = 2
-                n_doses_necessarias = 1
-            try:
-                self.__controlador_vacina.consulta_dose_estoque(vacina.codigo,n_doses_necessarias)
-            except:
-                print("Não é possível realizar este agendamento, pois não há doses de vacinas disponíveis no estoque.")
-            else:
-                novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo_agendamento,False)
-                self.__gera_codigo_agendamento += 1
-                self.__lista_de_agendamentos.append(novo_agendamento)
-                self.__lista_de_agendamentos_em_aberto.append(novo_agendamento)
-                print("\nAgendamento cadastrado ou alterado com sucesso!\n")
-                return novo_agendamento
+
+
         
     def encontra_agendamento_por_paciente(self, paciente):
         for i in range(len(self.__lista_de_agendamentos)):
@@ -150,17 +153,20 @@ class ControladorAgendamento():
         codigo = self.__tela_agendamento.ler_codigo()
         agendamento = self.encontra_agendamento_por_codigo(codigo)
         try:
-            agendamento.conclusao is False
+            if agendamento.conclusao is False:
+                agendamento.conclusao = True
+                self.__lista_de_agendamentos_em_aberto.remove(agendamento)
+                self.__lista_de_agendamentos_concluidos.append(agendamento)
+                codigo_vacina = agendamento.vacina.codigo
+                self.__controlador_vacina.remove_dose_aplicada_do_estoque(codigo_vacina)
+                codigo_paciente = agendamento.paciente.codigo
+                self.__controlador_paciente.vacina_paciente(codigo_paciente)
+            else:
+                raise Exception
         except:
             print("Este agendamento já foi concluído anteriormente. Selecione um agendamento em aberto para concluir.")
-        else:
-            agendamento.conclusao = True
-            self.__lista_de_agendamentos_em_aberto.remove(agendamento)
-            self.__lista_de_agendamentos_concluidos.append(agendamento)
-            codigo_vacina = agendamento.vacina.codigo
-            self.__controlador_vacina.remove_dose_aplicada_do_estoque(codigo_vacina)
-            codigo_paciente = agendamento.paciente.codigo
-            self.__controlador_paciente.vacina_paciente(codigo_paciente)
+
+
 
     def lista_agendamentos_em_aberto(self):
         os.system('cls' if os.name == 'nt' else 'clear')
