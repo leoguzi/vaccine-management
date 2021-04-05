@@ -1,3 +1,4 @@
+import os
 class TelaPaciente():
 
     def opcoes_paciente(self):
@@ -9,7 +10,7 @@ class TelaPaciente():
         print("0 - Voltar ao menu principal")
 
         opcao = int(input("\nDigite o numero da opção: "))
-        print("\n")
+        os.system('cls' if os.name == 'nt' else 'clear')
         return opcao
     
     def le_dados(self):
@@ -19,7 +20,11 @@ class TelaPaciente():
         return {"nome": nome, "idade": idade}
         
     def le_codigo(self):
-        codigo = int(input("Digite o código do paciente: "))
+        codigo = None
+        try:
+            codigo = int(input("Digite o código do paciente: "))
+        except:
+            print ("Codigo deve ser um numero inteiro!")
         return codigo
 
     def mostra_paciente(self, dados_paciente):

@@ -1,3 +1,4 @@
+import os
 class TelaEnfermeiros:
 
     def opcoes_enfermeiro(self):
@@ -14,17 +15,20 @@ class TelaEnfermeiros:
     
     def le_nome(self):
         nome = str(input("Nome: "))
+        wait = input("Cadastrado! Pressione enter...")
+        os.system('cls' if os.name == 'nt' else 'clear')
         return nome
 
     def le_codigo(self):
+        codigo = None
         try:
             codigo = int(input("Digite o código do enfermeiro: "))
         except:
-            print("O codigo deve ser um numero!")
+            print("\nO codigo deve ser um numero!")
         return codigo
 
     def mostra_enfermeiro(self, dados_enfermeiro):
-        print("------------------------------")
+        
         print("Codigo: ", dados_enfermeiro["codigo"])
         print("Nome: ", dados_enfermeiro["nome"])
         print("------------------------------")

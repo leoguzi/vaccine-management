@@ -8,6 +8,7 @@ class TelaVacina():
         print("3 - Consultar estoque de vacinas disponíveis")
         print("0 - Retornar ao menu principal")
         opcao = int(input("\nInforme a opção desejada: "))
+        os.system('cls' if os.name == 'nt' else 'clear')
         return(opcao)
 
     def ler_dados(self):

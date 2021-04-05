@@ -9,7 +9,7 @@ class ControladorVacina:
     def __init__(self, tela_vacina: TelaVacina):
         self.__tela_vacina = tela_vacina
         self.__lista_de_vacinas = []
-        self.__gera_codigo_vacina = int(500)
+        self.__gera_codigo_vacina = int(400)
 
     @property
     def lista_de_vacinas(self):
@@ -94,7 +94,8 @@ class ControladorVacina:
                 else:
                     raise ValueError
             except ValueError:
-                print("\n Opção inválida, digite um número de 0 a 3.\n")
+                wait = input("Opção inválida, digite um número de 0 a 3. Pressione Enter para continuar...")
+                os.system('cls' if os.name == 'nt' else 'clear')
 
 
 

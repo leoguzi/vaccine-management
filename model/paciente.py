@@ -24,8 +24,9 @@ class Paciente(Pessoa):
     @property
     def numero_doses(self):
         return self.__numero_doses
+    
     @numero_doses.setter
-    def numero_doses(self,numero_doses):
+    def numero_doses(self,numero_doses: int):
         self.__numero_doses = numero_doses
     
 

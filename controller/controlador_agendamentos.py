@@ -57,7 +57,7 @@ class ControladorAgendamento():
                 dose = 1
                 n_doses_necessarias = 2
             if n_doses == 1:
-                agendamento = self.__encontra_agendamento_por_paciente(paciente)
+                agendamento = self.encontra_agendamento_por_paciente(paciente) #erro de digitação corrigido aqui! (estava com .__, mas é um metodo desta classe, léo)
                 vacina = agendamento.vacina
                 dose = 2
                 n_doses_necessarias = 1
@@ -73,7 +73,7 @@ class ControladorAgendamento():
                 print("\nAgendamento cadastrado ou alterado com sucesso!\n")
                 return novo_agendamento
         
-    def encontra_agendamento_por_paciente(self,paciente):
+    def encontra_agendamento_por_paciente(self, paciente):
         for i in range(len(self.__lista_de_agendamentos)):
             if paciente == self.__lista_de_agendamentos[i].paciente:
                 agendamento = self.__lista_de_agendamentos[i]
@@ -176,6 +176,15 @@ class ControladorAgendamento():
             dados_agendamentos = {"paciente":agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
             self.__tela_agendamento.listar_agendamentos(dados_agendamentos)
 
+    def retorna_agendamentos_concluidos(self):
+        return self.__lista_de_agendamentos_concluidos
+    
+    def mostra_agendamento(self, agendamento: Agendamento):
+        dados_agendamento = {"paciente":agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
+        self.__tela_agendamento.listar_agendamentos(dados_agendamento)
+
+
+        
     def inicia_tela_agendamento(self):
         lista_opcoes={1: self.inserir_novo_agendamento,2: self.excluir_agendamento, 3: self.edita_agendamento, 4: self.lista_agendamentos, 5: self.concluir_agendamento}
         continua = True
