@@ -1,5 +1,11 @@
 import os
+import sys
+sys.path.append(".")
+
 class TelaAgendamento():
+
+    def __init__(self):
+        self.__window = None
    
     def opcoes_agendamento(self):
         print("========CONTROLE DE AGENDAMENTOS=========")

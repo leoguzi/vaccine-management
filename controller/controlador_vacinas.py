@@ -1,7 +1,6 @@
 import os
 import sys
 sys.path.append(".")
-
 from model.vacina import Vacina
 from view.tela_vacina import TelaVacina
 

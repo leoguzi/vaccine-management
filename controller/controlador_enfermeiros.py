@@ -1,81 +1,83 @@
-import os
 import sys
 sys.path.append(".")
 from model.enfermeiro import Enfermeiro
+from model.enfermeiro_dao import EnfermeiroDAO
 from view.tela_enfermeiro import TelaEnfermeiros
-
 
 class ControladorEnfermeiros():
 
     def __init__(self, tela_enfermeiros: TelaEnfermeiros):
         self.__tela_enfermeiros = tela_enfermeiros
-        self.__enfermeiros = []
+        self.__enfermeiro_DAO = EnfermeiroDAO()
         self.__gera_codigo = int(100)
-    
-    @property
-    def enfermeiros(self):
-        return self.__enfermeiros
 
     def adiciona_enfermeiro(self):
-        print("Digite o nome do enfermeiro:")
-        nome = self.__tela_enfermeiros.le_nome()
-        novo_enfermeiro = None
-        try:
-            novo_enfermeiro = Enfermeiro(nome, self.__gera_codigo)   
-        except:
-            print("Enfermeiro não cadastrado. Tente novamente!")
-        finally:
-            if novo_enfermeiro is not None:    
-                self.__enfermeiros.append(novo_enfermeiro)
-                self.__gera_codigo += 1
-            return(novo_enfermeiro)
-
+        while True: # obtem o nome ou None
+            try:
+                nome = self.__tela_enfermeiros.le_nome()
+                if nome == '': 
+                    raise Exception #implementar uma exeção para quando não digitar nada e clicar em cadastrar
+                else:
+                    break
+            except:
+                self.__tela_enfermeiros.mensagem("Enfermeiro não cadastrado. Digite um nome...")
+        if nome is not None:
+            self.__enfermeiro_DAO.add(Enfermeiro(nome, self.__gera_codigo)) 
+            self.__gera_codigo += 1 #incrementa o codigo
+              
     def remove_enfermeiro(self):
-        try:
-            if len(self.__enfermeiros) > 0:
-                print("\nInforme o código do enfermeiro que você deseja excluir.\n")
-                self.lista_enfermeiros()
-                codigo = self.__tela_enfermeiros.le_codigo()
-                enfermeiro = self.encontra_enfermeiro_por_codigo(codigo)
-                self.__enfermeiros.remove(enfermeiro)
-                wait = input("Removido com sucesso! Pressione enter")
-                os.system('cls' if os.name == 'nt' else 'clear')
-            else: 
-                raise Exception
-        except:
-            wait = input("Nenhum enfermeiro cadastrado no posto! Pressione enter...")
-            os.system('cls' if os.name == 'nt' else 'clear')
+        while True: #obtem o dicionario do enfermeiro ou None
+            try:
+                enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
+                if enfermeiro_selecionado == '':
+                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                else: 
+                    break
+            except:
+                self.__tela_enfermeiros.mensagem("Selecione um enfermeiro")
+        if enfermeiro_selecionado is not None:
+            self.__enfermeiro_DAO.remove(enfermeiro_selecionado['codigo'])
 
     def edita_enfermeiro(self):
-        try:
-            if len(self.__enfermeiros) > 0:
-                print("\nInforme o código do enfermeiro que você deseja alterar\n")
-                self.lista_enfermeiros()
-                codigo = self.__tela_enfermeiros.le_codigo()
-                enfermeiro = self.encontra_enfermeiro_por_codigo(codigo)
-                enfermeiro_auxiliar = self.adiciona_enfermeiro()
-                enfermeiro.nome = enfermeiro_auxiliar.nome
-                self.__enfermeiros.remove(enfermeiro_auxiliar)
-            else:
-                raise Exception
-        except:
-            wait = input("Nenhum enfermeiro cadastrado no posto! Pressione enter...")
-            os.system('cls' if os.name == 'nt' else 'clear')
+        while True: #obtem o dicionario do enfermeiro ou None
+            try:
+                enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
+                if enfermeiro_selecionado == '':
+                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                else: 
+                    break
+            except:
+                self.__tela_enfermeiros.mensagem("Selecione um enfermeiro")
+        if enfermeiro_selecionado is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler o nome.
+            while True: #obtem o novo nome ou None
+                try:
+                    novo_nome = self.__tela_enfermeiros.le_nome(enfermeiro_selecionado['nome'])
+                    if novo_nome == '':
+                        raise Exeption #exceção para "clicou em cadastrar sem digitar nada" aqui
+                    else:
+                        break
+                except:
+                    self.__tela_enfermeiros.mensagem("Digite um nome!")
+        if enfermeiro_selecionado is not None and novo_nome is not None:
+            for enfermeiro in self.__enfermeiro_DAO.get_all():
+                if enfermeiro.codigo == enfermeiro_selecionado['codigo']:
+                    enfermeiro.nome = novo_nome
+                    self.__enfermeiro_DAO.update()
 
-    def lista_enfermeiros(self):
+    def lista_enfermeiros(self): #retorna uma lista de dicionarios contendo as informações dos enfermeiros ou None cado não exista nenhum cadastrado.
         try: 
-            if len(self.__enfermeiros) > 0:
-                print("Lista de enfermeiros cadastrados: \n")
-                for enfermeiro in self.__enfermeiros:
-                    self.__tela_enfermeiros.mostra_enfermeiro({"codigo": enfermeiro.codigo, "nome": enfermeiro.nome})
+            if len(self.__enfermeiro_DAO.get_all()) > 0:
+                lista_enfermeiros = []
+                for enfermeiro in self.__enfermeiro_DAO.get_all():
+                    lista_enfermeiros.append({"codigo": enfermeiro.codigo, "nome": enfermeiro.nome})
             else:
-                raise Exception
+                lista_enfermeiros = None
+                raise Exception #criar uma exeção para lista vazia 
         except: 
-            wait = input("Nenhum enfermeiro Cadastrado no posto! Pressione enter...")
-            os.system('cls' if os.name == 'nt' else 'clear')
-        
+           self.__tela_enfermeiros.mensagem("Nenhum enfermeiro cadastrado no posto!")
+        return lista_enfermeiros 
 
-    def encontra_enfermeiro_por_codigo(self, codigo):
+    def encontra_enfermeiro_por_codigo(self, codigo): #provavelmente não vai mais ser usada
         enfermeiro = None
         while enfermeiro is None:
             for i in range(len(self.__enfermeiros)):
@@ -85,29 +87,19 @@ class ControladorEnfermeiros():
             print("\nEnfermeiro não encontrado. Informe um código válido.\n")
             codigo = self.__tela_enfermeiros.le_codigo()
 
-    def retorna_codigo_lido(self):
+    def retorna_codigo_lido(self): #provavelmente não vai mais ser usada
         codigo = self.__tela_enfermeiros.le_codigo()
         return codigo
+    
+    def mostra_enfermeiros(self): #abre a tela que lista os enfermeiros
+
+        self.__tela_enfermeiros.mostra_enfermeiros(self.lista_enfermeiros())
 
     def abre_tela_enfermeiros(self):
-        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.lista_enfermeiros}
-        continua = True
-        while continua:
-            try:
-                valor_lido = self.__tela_enfermeiros.opcoes_enfermeiro()
-                if valor_lido >= 1 and valor_lido <= 4:
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    lista_opcoes[valor_lido]()
-                elif valor_lido == 0: 
-                    continua = False
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                else:
-                    raise ValueError
-            except ValueError:
-                wait = input("Opção Invalida! Digite um numero inteiro entre 0 e 5! Enter para continuar...")
-                os.system('cls' if os.name == 'nt' else 'clear')
-
-        
-
-
-
+        lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.mostra_enfermeiros}
+        while True:
+            valor_lido = self.__tela_enfermeiros.opcoes_enfermeiro()
+            if valor_lido == 0 or valor_lido == None:
+                break
+            else:
+                lista_opcoes[valor_lido]()

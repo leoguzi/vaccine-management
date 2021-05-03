@@ -5,3 +5,4 @@ if __name__ == "__main__":
 
     controlador_sistema = ControladorSistema(TelaSistema())
     controlador_sistema.abre_menu_principal()
+    

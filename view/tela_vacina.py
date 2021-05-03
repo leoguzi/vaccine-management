@@ -1,6 +1,10 @@
+import sys
+sys.path.append(".")
 import os
 
 class TelaVacina():
+    def __init__(self):
+        self.__window = None
     def menu_vacina(self):
         print("============== CONTROLE DE VACINAS ==============")
         print("1 - Incluir doses no estoque")

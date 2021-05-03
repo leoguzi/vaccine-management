@@ -1,7 +1,6 @@
 import os
 import sys
 sys.path.append(".")
-
 from controller.controlador_enfermeiros import ControladorEnfermeiros
 from controller.controlador_pacientes import ControladorPacientes
 from controller.controlador_vacinas import ControladorVacina
@@ -9,7 +8,7 @@ from view.tela_agendamento import TelaAgendamento
 from model.agendamento import Agendamento
 
 class ControladorAgendamento():
-    def __init__(self, tela_agendamento:TelaAgendamento, controlador_paciente: ControladorPacientes, controlador_enfermeiro: ControladorEnfermeiros, controlador_vacina: ControladorVacina):
+    def __init__(self, tela_agendamento: TelaAgendamento, controlador_paciente: ControladorPacientes, controlador_enfermeiro: ControladorEnfermeiros, controlador_vacina: ControladorVacina):
         self.__tela_agendamento = tela_agendamento
         self.__controlador_paciente = controlador_paciente
         self.__controlador_enfermeiro = controlador_enfermeiro
