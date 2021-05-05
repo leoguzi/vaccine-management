@@ -59,7 +59,7 @@ class TelaPaciente:
             self.__window.Close()
             if button == 'Selecionar':
                 if values['-nome-'] == '': #clicou em selecionar sem selecionar nenhum nome
-                    selecionado = values['nome']  # retorna '' (string vazia), tratar onde esta função for utilizada.
+                    selecionado = values['-nome-']  # retorna '' (string vazia), tratar onde esta função for utilizada.
                 else:
                     for paciente in lista_pacientes: #procura o enfermeiro na lista de dicionarios através do nome selecionado (de longe a melhor solução porém é o que temos)
                         if paciente['nome'] == values['-nome-']: 

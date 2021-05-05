@@ -3,27 +3,40 @@ sys.path.append(".")
 from model.paciente import Paciente
 from model.paciente_dao import PacienteDAO
 from view.tela_paciente import TelaPaciente
-
+from controller.excecoes import ListaVaziaException
+from controller.excecoes import CampoEmBrancoException
+from controller.excecoes import NenhumSelecionadoException
 
 class ControladorPacientes():
 
     def __init__(self, tela_paciente: TelaPaciente):
         self.__tela_paciente = tela_paciente
         self.__paciente_DAO = PacienteDAO()
-        self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
+        if len(self.__paciente_DAO.get_all()) == 0:
+            self.__gera_codigo = int(200) #codigo dos pacientes começa em 200
+        else:
+            codigo = 200
+            for paciente in self.__paciente_DAO.get_all(): #encontra o maior codigo que já foi usado.
+                if paciente.codigo > codigo:
+                    codigo = paciente.codigo
+            self.__gera_codigo = codigo + 1 
 
     def adiciona_paciente(self):
-        while True: # obtem todos os dados ou None
+        while True: #obtem todos os dados ou None
             try:
                 dados = self.__tela_paciente.le_dados()
                 if dados == None:
                     break
-                elif dados['nome'] == '' or dados['idade'] == '':
-                    raise Exception #implementar uma exeção para quando não digitar algum dos dados e clicar em cadastrar
+                if dados['nome'] == '' or dados['idade'] == '':
+                    raise CampoEmBrancoException #exceção para quando não digitar algum dos dados e clicar em cadastrar
                 else:
-                    break
-            except:
-                self.__tela_paciente.mensagem("Paciente não cadastrado, digite todos os dados.")
+                    try:
+                        int(dados['idade'])
+                        break
+                    except ValueError:
+                        self.__tela_paciente.mensagem('A idade deve ser um numero inteiro!') 
+            except CampoEmBrancoException as mensagem:
+                self.__tela_paciente.mensagem(mensagem)
         if dados is not None: #somente cadastra o novo paciente caso a janela não tenha sido fechada a ou clicado em voltar.
             self.__paciente_DAO.add(Paciente(dados['nome'], int(dados['idade']), self.__gera_codigo))
             self.__gera_codigo += 1 #incrementa o codigo
@@ -33,11 +46,11 @@ class ControladorPacientes():
             try:
                 paciente_selecionado = self.__tela_paciente.combo_box_pacientes(self.lista_pacientes())
                 if paciente_selecionado == '':
-                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                    raise NenhumSelecionadoException('paciente') # exceção para "clicou em selecionar sem selecionar" aqui
                 else: 
                     break
-            except:
-                self.__tela_paciente.mensagem("Selecione um paciente")
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_paciente.mensagem(mensagem)
         if paciente_selecionado is not None:
             self.__paciente_DAO.remove(int(paciente_selecionado['codigo']))
 
@@ -46,26 +59,32 @@ class ControladorPacientes():
             try:
                 paciente_selecionado = self.__tela_paciente.combo_box_pacientes(self.lista_pacientes())
                 if paciente_selecionado == '':
-                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                    raise NenhumSelecionadoException('paciente') # exceção para "clicou em selecionar sem selecionar" aqui
                 else: 
                     break
-            except:
-                self.__tela_paciente.mensagem("Selecione um paciente")
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_paciente.mensagem(mensagem)
         if paciente_selecionado is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler os dados.
             while True: #obtem os novos dados ou None
                 try:
                     novos_dados = self.__tela_paciente.le_dados(paciente_selecionado)
-                    if novos_dados['nome'] == '' or novos_dados['idade'] == '':
-                        raise Exeption #exceção para "clicou em cadastrar sem digitar nada" aqui
-                    else:
+                    if novos_dados == None:
                         break
-                except:
-                    self.__tela_paciente.mensagem("Digite todos os dados!")
+                    if novos_dados['nome'] == '' or novos_dados['idade'] == '':
+                        raise CampoEmBrancoException #exceção para quando não digitar algum dos dados e clicar em cadastrar
+                    else:
+                        try:
+                            int(novos_dados['idade'])
+                            break
+                        except ValueError: #não digitou um numero inteiro
+                            self.__tela_paciente.mensagem('A idade deve ser um numero inteiro!') 
+                except CampoEmBrancoException as mensagem:
+                    self.__tela_paciente.mensagem(mensagem)
         if paciente_selecionado is not None and novos_dados is not None: #somente edita caso a janela não tenha sido fechada.
             for paciente in self.__paciente_DAO.get_all():
                 if paciente.codigo == paciente_selecionado['codigo']:
                     paciente.nome = novos_dados['nome']
-                    paciente.idade = int(novos_dados['idade'])#está dando erro quando não digita inteiro arrumar exceção 
+                    paciente.idade = int(novos_dados['idade']) #foi garantido que o numero é inteiro anteriormente.
                     self.__paciente_DAO.update()
    
     def encontra_paciente_por_codigo(self, codigo):
@@ -95,9 +114,9 @@ class ControladorPacientes():
                     lista_pacientes.append({'codigo': paciente.codigo, 'nome': paciente.nome, 'idade': paciente.idade, 'numero_doses': paciente.numero_doses})
             else:
                 lista_pacientes = None
-                raise Exception #criar uma exeção para lista vazia 
-        except: 
-           self.__tela_paciente.mensagem("Nenhum paciente cadastrado no posto!")
+                raise ListaVaziaException('paciente') #exceção para lista vazia 
+        except ListaVaziaException as mensagem:
+            self.__tela_paciente.mensagem(mensagem)
         return lista_pacientes
 
     def mostra_pacientes(self): #abre a tela que lista os pacientes

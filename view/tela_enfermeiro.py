@@ -1,9 +1,9 @@
 import os
 import PySimpleGUI as sg
 
+
 class TelaEnfermeiros:
 
-    
     def __init__(self):
         self.__window = None
 
@@ -35,10 +35,10 @@ class TelaEnfermeiros:
             ]
         self.__window = sg.Window('Cadastro de Enfermeiro', element_justification = 'c').Layout(layout)
         button, values = self.__window.Read()
-        if button == 'Cadastrar': #retorna o valor digitado ou '' se a pessoa clicar em cadastrar.
-            retorno = values['-nome-']
         if button == 'Voltar' or button == sg.WIN_CLOSED: #retorna none se a pessoa fechar a janela ou clicar em voltar. deve ser tratado onde essa função for utilizada.
             retorno = None
+        elif button == 'Cadastrar' and values['-nome-'] is not None:
+            retorno = values['-nome-']
         self.__window.Close()
         return retorno
 
@@ -78,7 +78,7 @@ class TelaEnfermeiros:
             self.__window.Close()
             if button == 'Selecionar':
                 if values['-nome-'] == '': #clicou em selecionar sem selecionar nenhum nome
-                    selecionado = values['nome']  # retorna '' (string vazia), tratar onde esta função for utilizada.
+                    selecionado = values['-nome-']  # retorna '' (string vazia), tratar onde esta função for utilizada.
                 else:
                     for enfermeiro in lista_enfermeiros: #procura o enfermeiro na lista de dicionarios através do nome selecionado (de longe a melhor solução porém é o que temos)
                         if enfermeiro['nome'] == values['-nome-']: 

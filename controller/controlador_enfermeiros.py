@@ -3,24 +3,34 @@ sys.path.append(".")
 from model.enfermeiro import Enfermeiro
 from model.enfermeiro_dao import EnfermeiroDAO
 from view.tela_enfermeiro import TelaEnfermeiros
+from controller.excecoes import ListaVaziaException
+from controller.excecoes import CampoEmBrancoException
+from controller.excecoes import NenhumSelecionadoException
 
 class ControladorEnfermeiros():
 
     def __init__(self, tela_enfermeiros: TelaEnfermeiros):
         self.__tela_enfermeiros = tela_enfermeiros
         self.__enfermeiro_DAO = EnfermeiroDAO()
-        self.__gera_codigo = int(100)
+        if len(self.__enfermeiro_DAO.get_all()) == 0:
+            self.__gera_codigo = int(100) #codigo dos enfermeiros começa em 100
+        else:
+            codigo = 100
+            for enfermeiro in self.__enfermeiro_DAO.get_all(): #encontra o maior codigo que já foi usado.
+                if enfermeiro.codigo > codigo:
+                    codigo = enfermeiro.codigo
+            self.__gera_codigo = codigo + 1 
 
     def adiciona_enfermeiro(self):
-        while True: # obtem o nome ou None
+        while True:
             try:
-                nome = self.__tela_enfermeiros.le_nome()
-                if nome == '': 
-                    raise Exception #implementar uma exeção para quando não digitar nada e clicar em cadastrar
+                nome = self.__tela_enfermeiros.le_nome() #obtem um nome ou none caso a janela seja fechada
+                if nome == '':
+                    raise CampoEmBrancoException #exeção para campo em branco aqui
                 else:
                     break
-            except:
-                self.__tela_enfermeiros.mensagem("Enfermeiro não cadastrado. Digite um nome...")
+            except CampoEmBrancoException as mensagem:
+                self.__tela_enfermeiros.mensagem(mensagem)   
         if nome is not None:
             self.__enfermeiro_DAO.add(Enfermeiro(nome, self.__gera_codigo)) 
             self.__gera_codigo += 1 #incrementa o codigo
@@ -30,11 +40,11 @@ class ControladorEnfermeiros():
             try:
                 enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
                 if enfermeiro_selecionado == '':
-                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                    raise NenhumSelecionadoException('enfermeiro') # exceção para "clicou em selecionar sem selecionar" aqui
                 else: 
                     break
-            except:
-                self.__tela_enfermeiros.mensagem("Selecione um enfermeiro")
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_enfermeiros.mensagem(mensagem)
         if enfermeiro_selecionado is not None:
             self.__enfermeiro_DAO.remove(enfermeiro_selecionado['codigo'])
 
@@ -43,21 +53,21 @@ class ControladorEnfermeiros():
             try:
                 enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
                 if enfermeiro_selecionado == '':
-                    raise Exeption # exceção para "clicou em selecionar sem selecionar" aqui
+                    raise NenhumSelecionadoException('enfermeiro') # exceção para "clicou em selecionar sem selecionar" aqui
                 else: 
                     break
-            except:
-                self.__tela_enfermeiros.mensagem("Selecione um enfermeiro")
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_enfermeiros.mensagem(mensagem)
         if enfermeiro_selecionado is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler o nome.
             while True: #obtem o novo nome ou None
                 try:
                     novo_nome = self.__tela_enfermeiros.le_nome(enfermeiro_selecionado['nome'])
                     if novo_nome == '':
-                        raise Exeption #exceção para "clicou em cadastrar sem digitar nada" aqui
+                        raise CampoEmBrancoException #exceção para "clicou em cadastrar sem digitar nada" aqui
                     else:
                         break
-                except:
-                    self.__tela_enfermeiros.mensagem("Digite um nome!")
+                except CampoEmBrancoException as mensagem:
+                    self.__tela_enfermeiros.mensagem(mensagem)
         if enfermeiro_selecionado is not None and novo_nome is not None:
             for enfermeiro in self.__enfermeiro_DAO.get_all():
                 if enfermeiro.codigo == enfermeiro_selecionado['codigo']:
@@ -72,9 +82,9 @@ class ControladorEnfermeiros():
                     lista_enfermeiros.append({"codigo": enfermeiro.codigo, "nome": enfermeiro.nome})
             else:
                 lista_enfermeiros = None
-                raise Exception #criar uma exeção para lista vazia 
-        except: 
-           self.__tela_enfermeiros.mensagem("Nenhum enfermeiro cadastrado no posto!")
+                raise ListaVaziaException('enfermeiro') #exceção para lista vazia 
+        except ListaVaziaException as mensagem:
+            self.__tela_enfermeiros.mensagem(mensagem)
         return lista_enfermeiros 
 
     def encontra_enfermeiro_por_codigo(self, codigo): #provavelmente não vai mais ser usada
