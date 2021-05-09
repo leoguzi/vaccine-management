@@ -36,43 +36,26 @@ class ControladorEnfermeiros():
             self.__gera_codigo += 1 #incrementa o codigo
               
     def remove_enfermeiro(self):
-        while True: #obtem o dicionario do enfermeiro ou None
-            try:
-                enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
-                if enfermeiro_selecionado == '':
-                    raise NenhumSelecionadoException('enfermeiro') # exceção para "clicou em selecionar sem selecionar" aqui
-                else: 
-                    break
-            except NenhumSelecionadoException as mensagem:
-                self.__tela_enfermeiros.mensagem(mensagem)
+        enfermeiro_selecionado = self.seleciona_enfermeiro()
         if enfermeiro_selecionado is not None:
-            self.__enfermeiro_DAO.remove(enfermeiro_selecionado['codigo'])
+            self.__enfermeiro_DAO.remove(enfermeiro_selecionado)
+            self.__tela_enfermeiros.mensagem('Excluido!')
 
     def edita_enfermeiro(self):
-        while True: #obtem o dicionario do enfermeiro ou None
-            try:
-                enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
-                if enfermeiro_selecionado == '':
-                    raise NenhumSelecionadoException('enfermeiro') # exceção para "clicou em selecionar sem selecionar" aqui
-                else: 
-                    break
-            except NenhumSelecionadoException as mensagem:
-                self.__tela_enfermeiros.mensagem(mensagem)
-        if enfermeiro_selecionado is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler o nome.
+        enfermeiro = self.__enfermeiro_DAO.get(self.seleciona_enfermeiro())
+        if enfermeiro is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler o nome.
             while True: #obtem o novo nome ou None
                 try:
-                    novo_nome = self.__tela_enfermeiros.le_nome(enfermeiro_selecionado['nome'])
+                    novo_nome = self.__tela_enfermeiros.le_nome(enfermeiro.nome)
                     if novo_nome == '':
                         raise CampoEmBrancoException #exceção para "clicou em cadastrar sem digitar nada" aqui
                     else:
                         break
                 except CampoEmBrancoException as mensagem:
                     self.__tela_enfermeiros.mensagem(mensagem)
-        if enfermeiro_selecionado is not None and novo_nome is not None:
-            for enfermeiro in self.__enfermeiro_DAO.get_all():
-                if enfermeiro.codigo == enfermeiro_selecionado['codigo']:
-                    enfermeiro.nome = novo_nome
-                    self.__enfermeiro_DAO.update()
+        if enfermeiro is not None and novo_nome is not None:
+            enfermeiro.nome = novo_nome
+            self.__enfermeiro_DAO.update()
 
     def lista_enfermeiros(self): #retorna uma lista de dicionarios contendo as informações dos enfermeiros ou None cado não exista nenhum cadastrado.
         try: 
@@ -98,8 +81,19 @@ class ControladorEnfermeiros():
         return self.__enfermeiro_DAO.get(codigo)
   
     def mostra_enfermeiros(self): #abre a tela que lista os enfermeiros
-
         self.__tela_enfermeiros.mostra_enfermeiros(self.lista_enfermeiros())
+
+    def seleciona_enfermeiro(self): #obtem o codigo do enfermeiro ou None
+        while True: 
+            try:
+                enfermeiro_selecionado = self.__tela_enfermeiros.combo_box_enfermeiros(self.lista_enfermeiros())
+                if enfermeiro_selecionado == '':
+                    raise NenhumSelecionadoException('enfermeiro') # exceção para "clicou em selecionar sem selecionar" aqui
+                else: 
+                    break
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_enfermeiros.mensagem(mensagem)
+        return enfermeiro_selecionado
 
     def abre_tela_enfermeiros(self):
         lista_opcoes = {1: self.adiciona_enfermeiro, 2: self.remove_enfermeiro, 3: self.edita_enfermeiro, 4: self.mostra_enfermeiros}

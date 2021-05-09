@@ -14,7 +14,7 @@ class TelaVacina():
                 [sg.ReadButton('Consultar vacinas disponíveis', size = (30, 1), key = 3)],
                 [sg.ReadButton('Voltar', size = (30, 1), key = 0)]
             ]
-        self.__window = sg.Window('PACIENTES', size = (400, 230), element_justification='c').Layout(layout)
+        self.__window = sg.Window('VACINAS', size = (400, 230), element_justification='c').Layout(layout)
         button, values = self.__window.Read()
         self.__window.Close()
         opcao = button
@@ -38,12 +38,6 @@ class TelaVacina():
             retorno = None
         self.__window.Close()
         return retorno
-    
-    #funcao anterior utilizada para ler o codigo e selecionar uma vacina
-    #não é mais necessária, pois agora o usuário seleciona diretamente a vacina
-    #def ler_codigo(self):
-    #    codigo = int(input("Código: "))
-    #    return codigo
 
     def ler_quantidade(self):
         layout=[
@@ -62,7 +56,6 @@ class TelaVacina():
             quantidade = None
         self.__window.Close()
         return quantidade
-
     
 
     def listar_vacinas(self, lista_vacinas):

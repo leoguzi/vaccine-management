@@ -47,38 +47,27 @@ class TelaPaciente:
         
     def combo_box_pacientes(self, lista_pacientes): #cria um combobox com todos os pacientes cadastrados atravez de uma lista de dicionarios recebida do controlador e retorna um dicionario com o paciente selecionado. 
         if lista_pacientes is not None: #só cria a combobox se existirem pacientes
-            nomes = []
+            codigos_nomes = []
             for paciente in lista_pacientes:
-                nomes.append(paciente['nome']) #separa os nomes em uma lista para criar o combobox
+                codigos_nomes.append(str(paciente['codigo']) + ' - ' + str(paciente['nome']))
             layout = [
-                [sg.InputCombo(nomes, key = '-nome-')],
+                [sg.InputCombo(codigos_nomes, key = '-codigo_nome-')],
                 [sg.ReadButton('Selecionar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
             ]
             self.__window = sg.Window("Seleção de Paciente").Layout(layout)
             button, values = self.__window.Read()
             self.__window.Close()
             if button == 'Selecionar':
-                if values['-nome-'] == '': #clicou em selecionar sem selecionar nenhum nome
-                    selecionado = values['-nome-']  # retorna '' (string vazia), tratar onde esta função for utilizada.
-                else:
-                    for paciente in lista_pacientes: #procura o enfermeiro na lista de dicionarios através do nome selecionado (de longe a melhor solução porém é o que temos)
-                        if paciente['nome'] == values['-nome-']: 
-                            selecionado = paciente
+                if values['-codigo_nome-'] == '': #clicou em selecionar sem selecionar nenhum paciente
+                    selecionado = values['-codigo_nome-']  # retorna '' (string vazia), tratar onde esta função for utilizada.
+                else: 
+                    selecionado = int(values['-codigo_nome-'].split(' ')[0]) #pega o código selecionado
             if button == 'Voltar' or button == sg.WIN_CLOSED: #retorna none se a pessoa fechar a janela ou clicar em voltar. deve ser tratado onde essa função for utilizada.
                 selecionado = None
         else:
-            selecionado = None #retorna None caso não existam enfermeiros cadastrados.
-        return selecionado #retorna None se fechar ou voltar, '' se não selecionar nenhum e clicar em "selecionar", ou um dicionario com o nome e codigo do enfermeiro selecionado.
+            selecionado = None #retorna None caso não existam pacientes cadastrados.
+        return selecionado #retorna None se fechar ou voltar, '' se não selecionar nenhum e clicar em "selecionar", ou ocodigo do Paciente selecionado.
 
-#Podemos excluir
-#    def le_codigo(self):
-#        codigo = None
-#        try:
-#            codigo = int(input("Digite o código do paciente: "))
-#        except:
-#            print ("Codigo deve ser um numero inteiro!")
-#        return codigo
-    
     def mostra_pacientes(self, lista_pacientes):
         if lista_pacientes is not None: #só cria a string caso existam pacientes...
             big_string = ''
