@@ -47,49 +47,52 @@ class ControladorAgendamento():
             self.__tela_agendamento.mensagem(mensagem)
         dados_agendamento = self.__tela_agendamento.seleciona_dados(self.__controlador_paciente.lista_pacientes(),self.__controlador_enfermeiro.lista_enfermeiros())
         try: 
-            if dados_agendamento['codigo_paciente'] == '' or dados_agendamento['codigo_enfermeiro'] == '' or dados_agendamento['data'] == '' or dados_agendamento['hora'] == '':
+            if dados_agendamento['paciente'] == '' or dados_agendamento['enfermeiro'] == '' or dados_agendamento['data'] == '' or dados_agendamento['hora'] == '':
                 raise CampoEmBrancoException()
         except CampoEmBrancoException as mensagem:
             self.__tela_agendamento.mensagem(mensagem)
-        codigo_paciente = dados_agendamento['codigo_paciente']
-        codigo_enfermeiro = dados_agendamento['codigo_enfermeiro']
-        data_hora = str(dados_agendamento['data']) + str(dados_agendamento['hora'])
-        paciente = self.__controlador_paciente.encontra_paciente_por_codigo(codigo_paciente)
-        enfermeiro = self.__controlador_enfermeiro.encontra_enfermeiro_por_codigo(codigo_enfermeiro)
-        if len(self.__agendamento_DAO.get_all()) > 0:
-            for agendamento in self.__agendamento_DAO.get_all():
-                if (paciente == agendamento.paciente and agendamento.conclusao == True):
-                    n_doses += 1
-                if (paciente == agendamento.paciente and agendamento.conclusao == False):
-                    mensagem = 'Este paciente já possui um agendamento em aberto. Conclua ou exclua o agendamento existente antes de cadastrar outro.'
-                    self.__tela_agendamento.mensagem(mensagem)
-        if n_doses >= 0 and n_doses < 2:
-            if n_doses == 0:
-                codigo_da_vacina = self.__tela_agendamento.selecionar_vacina(self.__controlador_vacina.lista_vacinas())
-                vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
-                dose = 1
-                n_doses_necessarias = 2
-            if n_doses == 1:
-                agendamento = self.encontra_agendamento_por_paciente(paciente) #erro de digitação corrigido aqui! (estava com .__, mas é um metodo desta classe, léo)
-                vacina = agendamento.vacina
-                dose = 2
-                n_doses_necessarias = 1
-            try:
-                if self.__controlador_vacina.consulta_dose_estoque(vacina.codigo,n_doses_necessarias):
-                    novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo,False)
-                    self.__agendamento_DAO.add(Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo,False))
-                    self.__gera_codigo += 1
-                    return novo_agendamento
+        if dados_agendamento is not None:
+            codigo_paciente = int(dados_agendamento['paciente'].split(' ')[0])
+            codigo_enfermeiro = int(dados_agendamento['enfermeiro'].split(' ')[0])
+            data_hora = str(dados_agendamento['data']) + str(dados_agendamento['hora'])
+            paciente = self.__controlador_paciente.encontra_paciente_por_codigo(codigo_paciente)
+            enfermeiro = self.__controlador_enfermeiro.encontra_enfermeiro_por_codigo(codigo_enfermeiro)
+            agendamento_existente = False
+            if len(self.__agendamento_DAO.get_all()) > 0:
+                for agendamento in self.__agendamento_DAO.get_all():
+                    if (paciente == agendamento.paciente and agendamento.conclusao == True):
+                        n_doses += 1
+                    if (paciente == agendamento.paciente and agendamento.conclusao == False):
+                        agendamento_existente = True
+            if agendamento_existente == False:
+                if n_doses >= 0 and n_doses < 2:
+                    if n_doses == 0:
+                        codigo_da_vacina = self.__tela_agendamento.selecionar_vacina(self.__controlador_vacina.lista_vacinas())
+                        vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
+                        dose = 1
+                        n_doses_necessarias = 2
+                    if n_doses == 1:
+                        agendamento = self.encontra_agendamento_por_paciente(paciente) #erro de digitação corrigido aqui! (estava com .__, mas é um metodo desta classe, léo)
+                        vacina = agendamento.vacina
+                        dose = 2
+                        n_doses_necessarias = 1
+                    try:
+                        if self.__controlador_vacina.consulta_dose_estoque(vacina.codigo,n_doses_necessarias):
+                            novo_agendamento = Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo,False)
+                            self.__agendamento_DAO.add(Agendamento(paciente,enfermeiro,vacina,data_hora,dose,self.__gera_codigo,False))
+                            self.__gera_codigo += 1
+                            return novo_agendamento
+                        else:    
+                            raise VacinaIndisponivelException
+                    except VacinaIndisponivelException as mensagem:
+                        self.__tela_agendamento.mensagem(mensagem)
                 else:    
-                    raise VacinaIndisponivelException
-            except VacinaIndisponivelException as mensagem:
+                    mensagem = 'Este paciente já tomou duas doses da vacina. Não é possível fazer um novo agendamento.'
+                    self.__tela_agendamento.mensagem(mensagem)
+            else:
+                mensagem = 'Este paciente já possui um agendamento em aberto. Conclua ou exclua o agendamento existente antes de cadastrar outro.'
                 self.__tela_agendamento.mensagem(mensagem)
-        else:    
-            mensagem = 'Este paciente já tomou duas doses da vacina. Não é possível fazer um novo agendamento.'
-            self.__tela_agendamento.mensagem(mensagem)
-
-
-        
+       
     def encontra_agendamento_por_paciente(self, paciente):
         agendamento_selecionado = None
         for agendamento in self.__agendamento_DAO.get_all():
@@ -98,20 +101,12 @@ class ControladorAgendamento():
         return agendamento_selecionado
 
     
-    def encontra_agendamento_por_codigo(self,codigo):
-        for agendamento in self.__agendamento_DAO.get_all():
-            if agendamento.codigo == codigo:
-                agendamento_selecionado = agendamento
-        return agendamento_selecionado
-
-    
     def edita_agendamento(self):
         if len(self.__agendamento_DAO.get_all()) == 0:
             self.__tela_agendamento.mensagem("Não é possível alterar um agendamento, pois não há agendamentos em aberto cadastrados neste posto, e não é possível alterar agendamento concluídos.")
         else:
-            self.lista_agendamentos_em_aberto()
-            codigo = self.__tela_agendamento.seleciona_agendamento()
-            agendamento_selecionado = self.encontra_agendamento_por_codigo(codigo)
+            codigo = self.__tela_agendamento.seleciona_agendamento(self.lista_agendamentos_em_aberto())
+            agendamento_selecionado = self.__agendamento_DAO.get(codigo)
             if agendamento_selecionado.conclusao:
                 self.__tela_agendamento.mensagem('Não é possível alterar um agendamento concluído')
             else:
@@ -128,24 +123,23 @@ class ControladorAgendamento():
             self.__tela_agendamento.mensagem('Não é possível excluir nenhum agendamento, pois não há nenhum agendamento cadastrado no posto.')
         else:
             codigo = self.__tela_agendamento.seleciona_agendamento(self.lista_todos_agendamentos())
-            agendamento = self.encontra_agendamento_por_codigo(codigo)
-            self.__agendamento_DAO.remove(agendamento.codigo)
+            self.__agendamento_DAO.remove(codigo)
     
     def lista_agendamentos(self):
         opcoes_de_lista = {1: self.mostra_agendamentos_em_aberto, 2: self.mostra_agendamentos_concluidos, 3: self.mostra_todos_agendamentos}
-        try:
+        while True:
             valor_lido = self.__tela_agendamento.selecionar_lista_agendamentos()
-            if valor_lido >= 0 and valor_lido <= 3:
-                opcoes_de_lista[valor_lido]()
+            if valor_lido == 0 or valor_lido == None:
+                break
             else:
-                raise ValueError
-        except ValueError:
-            self.__tela_agendamento.mensagem('\nOpção Invalida! Digite um numero inteiro entre 1 e 3!\n')
-    
+                opcoes_de_lista[valor_lido]()
+
     def lista_todos_agendamentos(self):
         lista_agendamentos=[]
         for agendamento in self.__agendamento_DAO.get_all():
             dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
+            #dados_agendamentos = {"paciente": agendamento.paciente, "enfermeiro":agendamento.enfermeiro,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
+            #dados_agendamentos = {"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
             lista_agendamentos.append(dados_agendamentos)
         return lista_agendamentos
 
@@ -174,10 +168,10 @@ class ControladorAgendamento():
         self.__tela_agendamento.listar_agendamentos(self.lista_todos_agendamentos())
     
     def concluir_agendamento(self):
-        codigo = self.__tela_agendamento.seleciona_agendamento()
-        agendamento = self.encontra_agendamento_por_codigo(codigo)
         try:
-            if agendamento.conclusao is False:
+            if len(self.lista_agendamentos_em_aberto()) > 0:
+                codigo = self.__tela_agendamento.seleciona_agendamento(self.lista_agendamentos_em_aberto())
+                agendamento = self.__agendamento_DAO.get(codigo)
                 agendamento.conclusao = True
                 codigo_vacina = agendamento.vacina.codigo
                 self.__controlador_vacina.remove_dose_aplicada_do_estoque(codigo_vacina)
@@ -185,9 +179,9 @@ class ControladorAgendamento():
                 self.__controlador_paciente.vacina_paciente(codigo_paciente)
                 self.__agendamento_DAO.update()
             else:
-                raise Exception
-        except:
-            self.__tela_agendamento('Este agendamento já foi concluído anteriormente. Selecione um agendamento em aberto para concluir.')
+                raise ListaVaziaException('agendamento')
+        except ListaVaziaException as mensagem:
+            self.__tela_agendamento.mensagem(mensagem)
 
     def inicia_tela_agendamento(self):
         lista_opcoes={1: self.inserir_novo_agendamento,2: self.excluir_agendamento, 3: self.edita_agendamento, 4: self.lista_agendamentos, 5: self.concluir_agendamento}

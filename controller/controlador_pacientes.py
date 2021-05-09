@@ -19,8 +19,8 @@ class ControladorPacientes():
             for paciente in self.__paciente_DAO.get_all(): #encontra o maior codigo que já foi usado.
                 if paciente.codigo > codigo:
                     codigo = paciente.codigo
-            self.__gera_codigo = codigo + 1 
-
+            self.__gera_codigo = codigo + 1
+    
     def adiciona_paciente(self):
         while True: #obtem todos os dados ou None
             try:
@@ -88,11 +88,8 @@ class ControladorPacientes():
                     self.__paciente_DAO.update()
    
     def encontra_paciente_por_codigo(self, codigo):
-        paciente_selecionado = None
-        for paciente in self.__paciente_DAO.get_all():
-            if paciente.codigo == codigo:
-                paciente_selecionado = paciente
-        return paciente_selecionado
+        return self.__paciente_DAO.get(codigo)
+
 
     
     def vacina_paciente(self,codigo):

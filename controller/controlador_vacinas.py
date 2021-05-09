@@ -19,8 +19,8 @@ class ControladorVacina:
             for vacina in self.__vacina_DAO.get_all(): #encontra o maior codigo que já foi usado.
                 if vacina.codigo > codigo:
                     codigo = vacina.codigo
-            self.__gera_codigo = codigo + 1 
-
+            self.__gera_codigo = codigo + 1
+    
     def inclui_vacina(self):
         while True: #obtem todos os dados ou None
             try:
@@ -106,6 +106,9 @@ class ControladorVacina:
             return True
         else:
             return False
+
+    def encontra_vacina_por_codigo(self,codigo):
+        return self.__vacina_DAO.get(codigo)
 
     def inicia_tela_vacina(self):
         lista_opcoes = {1:self.inclui_vacina,2:self.remove_doses_vacina, 3:self.retorna_estoque}

@@ -19,7 +19,7 @@ class ControladorEnfermeiros():
             for enfermeiro in self.__enfermeiro_DAO.get_all(): #encontra o maior codigo que já foi usado.
                 if enfermeiro.codigo > codigo:
                     codigo = enfermeiro.codigo
-            self.__gera_codigo = codigo + 1 
+            self.__gera_codigo = codigo + 1
 
     def adiciona_enfermeiro(self):
         while True:
@@ -87,13 +87,15 @@ class ControladorEnfermeiros():
             self.__tela_enfermeiros.mensagem(mensagem)
         return lista_enfermeiros 
 
-    def encontra_enfermeiro_por_codigo(self, codigo):
-        enfermeiro_selecionado = None
-        for enfermeiro in self.__enfermeiro_DAO.get_all():
-            if enfermeiro.codigo == codigo:
-                enfermeiro_selecionado = enfermeiro
-        return enfermeiro_selecionado
+#    def encontra_enfermeiro_por_codigo(self, codigo):
+#        enfermeiro_selecionado = None
+#        for enfermeiro in self.__enfermeiro_DAO.get_all():
+#            if enfermeiro.codigo == codigo:
+#                enfermeiro_selecionado = enfermeiro
+#        return enfermeiro_selecionado
 
+    def encontra_enfermeiro_por_codigo(self, codigo):
+        return self.__enfermeiro_DAO.get(codigo)
   
     def mostra_enfermeiros(self): #abre a tela que lista os enfermeiros
 
