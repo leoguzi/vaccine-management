@@ -42,32 +42,16 @@ class ControladorPacientes():
             self.__gera_codigo += 1 #incrementa o codigo
 
     def remove_paciente(self):
-        while True: #obtem o dicionario do paciente ou None
-            try:
-                paciente_selecionado = self.__tela_paciente.combo_box_pacientes(self.lista_pacientes())
-                if paciente_selecionado == '':
-                    raise NenhumSelecionadoException('paciente') # exceção para "clicou em selecionar sem selecionar" aqui
-                else: 
-                    break
-            except NenhumSelecionadoException as mensagem:
-                self.__tela_paciente.mensagem(mensagem)
-        if paciente_selecionado is not None:
-            self.__paciente_DAO.remove(int(paciente_selecionado['codigo']))
+        codigo_paciente = self.seleciona_paciente()
+        if codigo_paciente is not None:
+            self.__paciente_DAO.remove(codigo_paciente)
 
     def edita_paciente(self):
-        while True: #obtem o dicionario do enfermeiro ou None
-            try:
-                paciente_selecionado = self.__tela_paciente.combo_box_pacientes(self.lista_pacientes())
-                if paciente_selecionado == '':
-                    raise NenhumSelecionadoException('paciente') # exceção para "clicou em selecionar sem selecionar" aqui
-                else: 
-                    break
-            except NenhumSelecionadoException as mensagem:
-                self.__tela_paciente.mensagem(mensagem)
-        if paciente_selecionado is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o enfermeiro, nem tenta ler os dados.
+        paciente = self.__paciente_DAO.get(self.seleciona_paciente())
+        if paciente is not None: #se o usuario fechar a tela ou clicar em voltar antes de selecionar o paciente, nem tenta ler os dados.
             while True: #obtem os novos dados ou None
                 try:
-                    novos_dados = self.__tela_paciente.le_dados(paciente_selecionado)
+                    novos_dados = self.__tela_paciente.le_dados({'nome': paciente.nome, 'idade': paciente.idade})
                     if novos_dados == None:
                         break
                     if novos_dados['nome'] == '' or novos_dados['idade'] == '':
@@ -80,29 +64,17 @@ class ControladorPacientes():
                             self.__tela_paciente.mensagem('A idade deve ser um numero inteiro!') 
                 except CampoEmBrancoException as mensagem:
                     self.__tela_paciente.mensagem(mensagem)
-        if paciente_selecionado is not None and novos_dados is not None: #somente edita caso a janela não tenha sido fechada.
-            for paciente in self.__paciente_DAO.get_all():
-                if paciente.codigo == paciente_selecionado['codigo']:
-                    paciente.nome = novos_dados['nome']
-                    paciente.idade = int(novos_dados['idade']) #foi garantido que o numero é inteiro anteriormente.
-                    self.__paciente_DAO.update()
+        if paciente is not None and novos_dados is not None: #somente edita caso a janela não tenha sido fechada.
+            paciente.nome = novos_dados['nome']
+            paciente.idade = int(novos_dados['idade']) #foi garantido que o numero é inteiro anteriormente.
+            self.__paciente_DAO.update()
    
-    def encontra_paciente_por_codigo(self, codigo):
-        paciente = None
-        while paciente is None:
-            for i in range(len(self.__pacientes)):
-                if self.__pacientes[i].codigo == codigo:
-                    paciente = self.__pacientes[i]
-                    return paciente
-            print("\nPaciente não encontrado.\n")
-            codigo = self.__tela_paciente.le_codigo()
-    
     def vacina_paciente(self,codigo):
         paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
         try:
             paciente_vacinado.numero_doses <= 2
         except:
-            print("\nNão é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.\n")
+            self.__tela_paciente.mensagem("Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.")
         else:
             paciente_vacinado.numero_doses += 1
 
@@ -121,6 +93,18 @@ class ControladorPacientes():
 
     def mostra_pacientes(self): #abre a tela que lista os pacientes
         self.__tela_paciente.mostra_pacientes(self.lista_pacientes()) 
+    
+    def seleciona_paciente(self): #obtem o codigo do paciente ou None
+        while True: 
+            try:
+                codigo_paciente_selecionado = self.__tela_paciente.combo_box_pacientes(self.lista_pacientes())
+                if codigo_paciente_selecionado == '':
+                    raise NenhumSelecionadoException('paciente') # exceção para "clicou em selecionar sem selecionar" aqui
+                else: 
+                    break
+            except NenhumSelecionadoException as mensagem:
+                self.__tela_paciente.mensagem(mensagem)
+        return codigo_paciente_selecionado
     
     def abre_tela_pacientes(self):
         lista_opcoes = {1: self.adiciona_paciente, 2: self.remove_paciente, 3: self.edita_paciente, 4: self.mostra_pacientes}

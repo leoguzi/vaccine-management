@@ -21,7 +21,10 @@ class TelaSistema():
         self.__window.Close()
         opcao = button
         return opcao
-
+    
+    def motra_atendimento_enfermeiro(self):
+        pass
+    
     def mostra_relatorio(self, relatorio):
         layout = [
             [sg.Txt('=====RELATÓRIO GERENCIAL=====', size = (50,1), justification = 'c')],

@@ -49,7 +49,7 @@ class ControladorVacina:
             codigo = self.__tela_vacina.selecionar_vacina(self.lista_vacinas())
             if codigo == '':
                 raise NenhumSelecionadoException('vacina')
-            else:
+            elif codigo is not None:
                 vacina = self.encontra_vacina_por_codigo(codigo)
                 quantidade_inicial = int(vacina.quantidade)
                 mensagem = 'Vacina encontrada. \n Existem ' + str(quantidade_inicial) + ' doses desta vacina no estoque. Informe a quantidade que deseja remover'

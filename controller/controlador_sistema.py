@@ -29,21 +29,8 @@ class ControladorSistema():
                     lista_opcoes[valor_lido]()
              
     def listar_atendimentos_enfermeiro(self):
-        try:
-            if len(self.__controlador_enfermeiros.enfermeiros) > 0:
-                lista_atendimentos_concluidos = self.__controlador_agendamento.retorna_agendamentos_concluidos()
-                self.__controlador_enfermeiros.lista_enfermeiros()
-                codigo_enfermeiro = self.__controlador_enfermeiros.retorna_codigo_lido()
-                print("Lista de pacientes atendidos pelo enfermeiro escolhido: ")
-                for atendimento in lista_atendimentos_concluidos:
-                    enfermeiro = atendimento.enfermeiro
-                    if codigo_enfermeiro == enfermeiro.codigo:
-                        self.__controlador_agendamento.mostra_agendamento(atendimento)
-            else: 
-                raise Exception
-        except:
-            wait = input("Nenhum enfermeiro Cadastrado. Pressione enter...")
-            os.system('cls' if os.name == 'nt' else 'clear')
+        enfermeiro = self.__controlador_enfermeiros.seleciona_enfermeiro()
+        #continuar aqui
             
     def gera_relatorio(self):
         lista_pacientes = self.__controlador_pacientes.lista_pacientes()
@@ -56,8 +43,8 @@ class ControladorSistema():
                 if paciente['numero_doses'] == 0:
                     pacientes_fila +=1
                 elif paciente['numero_doses'] == 1:
-                    pacientes_primeira_dose +=1
-                    total_doses_aplicadas +=1
+                    pacientes_primeira_dose += 1
+                    total_doses_aplicadas += 1
                 else:
                     pacientes_segunda_dose +=1
                     total_doses_aplicadas +=2
