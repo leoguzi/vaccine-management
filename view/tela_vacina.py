@@ -57,7 +57,7 @@ class TelaVacina():
             if values['-quantidade-']=='':
                 quantidade = 0
             else:
-                quantidade = values['-quantidade-']
+                quantidade = int(values['-quantidade-'])
         if button == 'Voltar' or button == sg.WIN_CLOSED: #retorna none se a pessoa fechar a janela ou clicar em voltar. deve ser tratado onde essa função for utilizada.
             quantidade = None
         self.__window.Close()

@@ -54,16 +54,17 @@ class ControladorVacina:
                 quantidade_inicial = int(vacina.quantidade)
                 mensagem = 'Vacina encontrada. \n Existem ' + str(quantidade_inicial) + ' doses desta vacina no estoque. Informe a quantidade que deseja remover'
                 self.__tela_vacina.mensagem(mensagem)
-                quantidade = int(self.__tela_vacina.ler_quantidade())
-                while quantidade_inicial < quantidade:
-                    mensagem = 'Informe uma quantidade igual ou inferior a ' + str(quantidade_inicial)
-                    self.__tela_vacina.mensagem(mensagem)
-                    quantidade = self.__tela_vacina.ler_quantidade()
-                vacina.quantidade -= quantidade
-                if vacina.quantidade == 0: 
-                    self.__vacina_DAO.remove(vacina.codigo)
-                else:
-                    self.__vacina_DAO.update()
+                quantidade = self.__tela_vacina.ler_quantidade()
+                if quantidade is not None:
+                    while quantidade_inicial < quantidade:
+                        mensagem = 'Informe uma quantidade igual ou inferior a ' + str(quantidade_inicial)
+                        self.__tela_vacina.mensagem(mensagem)
+                        quantidade = self.__tela_vacina.ler_quantidade()
+                    vacina.quantidade -= quantidade
+                    if vacina.quantidade == 0: 
+                        self.__vacina_DAO.remove(vacina.codigo)
+                    else:
+                        self.__vacina_DAO.update()
         except NenhumSelecionadoException as mensagem:
             self.__tela_vacina.mensagem(mensagem)
 
