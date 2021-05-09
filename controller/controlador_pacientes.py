@@ -106,7 +106,7 @@ class ControladorPacientes():
         else:
             paciente_vacinado.numero_doses += 1
 
-    def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None cado não exista nenhum cadastrado.
+    def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None caso não exista nenhum cadastrado.
         try: 
             if len(self.__paciente_DAO.get_all()) > 0:
                 lista_pacientes = []
@@ -120,7 +120,6 @@ class ControladorPacientes():
         return lista_pacientes
 
     def mostra_pacientes(self): #abre a tela que lista os pacientes
-
         self.__tela_paciente.mostra_pacientes(self.lista_pacientes()) 
     
     def abre_tela_pacientes(self):

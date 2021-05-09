@@ -3,73 +3,101 @@ import sys
 sys.path.append(".")
 from model.vacina import Vacina
 from view.tela_vacina import TelaVacina
+from model.vacina_dao import VacinaDAO
+from controller.excecoes import ListaVaziaException
+from controller.excecoes import CampoEmBrancoException
+from controller.excecoes import NenhumSelecionadoException
 
 class ControladorVacina:
     def __init__(self, tela_vacina: TelaVacina):
         self.__tela_vacina = tela_vacina
-        self.__lista_de_vacinas = []
-        self.__gera_codigo_vacina = int(400)
-
-    @property
-    def lista_de_vacinas(self):
-        return self.__lista_de_vacinas
+        self.__vacina_DAO = VacinaDAO()
+        if len(self.__vacina_DAO.get_all()) == 0:
+            self.__gera_codigo = int(400) #codigo das vacinas começa em 400
+        else:
+            codigo = 400
+            for vacina in self.__vacina_DAO.get_all(): #encontra o maior codigo que já foi usado.
+                if vacina.codigo > codigo:
+                    codigo = vacina.codigo
+            self.__gera_codigo = codigo + 1 
 
     def inclui_vacina(self):
-        nova_vacina = False
-        print("Informe os dados da vacina que será incluída no estoque:")
-        dados_vacina = self.__tela_vacina.ler_dados()
-        for i in range (len(self.__lista_de_vacinas)):
-            if (dados_vacina["tipo"] == self.__lista_de_vacinas[i].tipo and dados_vacina["fabricante"] == self.__lista_de_vacinas[i].fabricante):
-                self.__lista_de_vacinas[i].quantidade += dados_vacina["quantidade"]
-                print('\nEsta vacina já está cadastrada. As novas doses foram adicionadas ao estoque. \n Agora, existem ',self.__lista_de_vacinas[i].quantidade,' doses desta vacina no sistema.')
-                nova_vacina = True
-        if nova_vacina == False:
-            nova_vacina = Vacina(dados_vacina["tipo"],dados_vacina["fabricante"],dados_vacina["quantidade"], self.__gera_codigo_vacina)
-            self.__gera_codigo_vacina += 1
-            self.__lista_de_vacinas.append(nova_vacina)
+        while True: #obtem todos os dados ou None
+            try:
+                dados = self.__tela_vacina.ler_dados()
+                if dados == None:
+                    break
+                if dados['tipo'] == '' or dados['fabricante'] == '' or dados['quantidade'] == '':
+                    raise CampoEmBrancoException #exceção para quando não digitar algum dos dados e clicar em cadastrar
+                else:
+                    try:
+                        int(dados['quantidade'])
+                        break
+                    except ValueError:
+                        self.__tela_vacina.mensagem('A quantidade deve ser um numero inteiro!') 
+            except CampoEmBrancoException as mensagem:
+                self.__tela_vacina.mensagem(mensagem)
+        if dados is not None:
+            for vacina in self.__vacina_DAO.get_all():
+                if (dados['tipo'] == vacina.tipo and dados['fabricante'] == vacina.fabricante):
+                    vacina.quantidade += dados['quantidade']
+            self.__vacina_DAO.add(Vacina(dados['tipo'], dados['fabricante'], int(dados['quantidade']), self.__gera_codigo))
+            self.__gera_codigo += 1 #incrementa o codigo
 
     def remove_doses_vacina(self):
-        removeu = False
-        self.retorna_estoque()
-        codigo = self.__tela_vacina.ler_codigo()
-        vacina = self.encontra_vacina_por_codigo(codigo)
-        quantidade_inicial = vacina.quantidade
-        print("Vacina encontrada.\n Existem ",quantidade_inicial," doses desta vacina no estoque. Informe a quantidade que deseja remover")
-        quantidade = self.__tela_vacina.ler_quantidade()
-        while quantidade_inicial < quantidade:
-            print("Informe uma quantidade igual ou inferior a ",quantidade_inicial)
-            quantidade = self.__tela_vacina.ler_quantidade()
-        vacina.quantidade -= quantidade
-        print("Foram removidas ",quantidade," doses do estoque. \n Restam ",vacina.quantidade," doses desta vacina no estoque.")
-        if vacina.quantidade == 0: 
-            self.exclui_vacina(vacina)
+        try:
+            codigo = self.__tela_vacina.selecionar_vacina(self.lista_vacinas())
+            if codigo == '':
+                raise NenhumSelecionadoException('vacina')
+            else:
+                vacina = self.encontra_vacina_por_codigo(codigo)
+                quantidade_inicial = int(vacina.quantidade)
+                mensagem = 'Vacina encontrada. \n Existem ' + str(quantidade_inicial) + ' doses desta vacina no estoque. Informe a quantidade que deseja remover'
+                self.__tela_vacina.mensagem(mensagem)
+                quantidade = int(self.__tela_vacina.ler_quantidade())
+                while quantidade_inicial < quantidade:
+                    mensagem = 'Informe uma quantidade igual ou inferior a ' + str(quantidade_inicial)
+                    self.__tela_vacina.mensagem(mensagem)
+                    quantidade = self.__tela_vacina.ler_quantidade()
+                vacina.quantidade -= quantidade
+                if vacina.quantidade == 0: 
+                    self.__vacina_DAO.remove(vacina.codigo)
+                else:
+                    self.__vacina_DAO.update()
+        except NenhumSelecionadoException as mensagem:
+            self.__tela_vacina.mensagem(mensagem)
+
+    def lista_vacinas(self): #retorna uma lista de dicionarios contendo as informações das vacinas ou None caso não exista nenhum cadastrado.
+        try: 
+            if len(self.__vacina_DAO.get_all()) > 0:
+                lista_vacinas = []
+                for vacina in self.__vacina_DAO.get_all():
+                    lista_vacinas.append({'codigo': vacina.codigo, 'tipo': vacina.tipo, 'fabricante': vacina.fabricante, 'quantidade': vacina.quantidade})
+            else:
+                lista_vacinas = None
+                raise ListaVaziaException('vacina') #exceção para lista vazia 
+        except ListaVaziaException as mensagem:
+            self.__tela_vacina.mensagem(mensagem)
+        return lista_vacinas
 
     def retorna_estoque(self): #função utilizada para retornar todo o estoque de vacinas do posto
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("Lista de vacinas constantes no estoque:")
-        for vacina in self.__lista_de_vacinas:
-            dados_vacina = {"tipo":vacina.tipo, "fabricante":vacina.fabricante,"quantidade":vacina.quantidade,"codigo":vacina.codigo}
-            self.__tela_vacina.listar_vacinas(dados_vacina)
+        self.__tela_vacina.listar_vacinas(self.lista_vacinas())
+
     
     def remove_dose_aplicada_do_estoque(self,codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
         vacina = self.encontra_vacina_por_codigo(codigo)
         vacina.quantidade -= 1
         if vacina.quantidade == 0:
-            self.exclui_vacina(vacina)
+            self.__vacina_DAO.remove(vacina.codigo)
+        else:
+            self.__vacina_DAO.update()
     
-    def exclui_vacina(self,vacina):
-        self.__lista_de_vacinas.remove(vacina)
-        return(self.__lista_de_vacinas)
-
     def encontra_vacina_por_codigo(self, codigo):
-        vacina = None
-        while vacina is None:
-            for i in range (len(self.__lista_de_vacinas)):
-                if self.__lista_de_vacinas[i].codigo == codigo:
-                    vacina = self.__lista_de_vacinas[i]
-                    return vacina
-            print("Vacina não encontrada. Informe um código válido.")
-            codigo = self.__tela_vacina.ler_codigo()
+        vacina_selecionada = None
+        for vacina in self.__vacina_DAO.get_all():
+            if vacina.codigo == codigo:
+                vacina_selecionada = vacina
+        return vacina_selecionada
          
     def consulta_dose_estoque(self,codigo, n_doses_necessarias): #função utilizada para consultar o estoque de uma vacina específica, para saber se é possivel agendar um atendimento de primeira ou segunda dose
         vacina = self.encontra_vacina_por_codigo(codigo)
@@ -80,21 +108,14 @@ class ControladorVacina:
             return False
 
     def inicia_tela_vacina(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
         lista_opcoes = {1:self.inclui_vacina,2:self.remove_doses_vacina, 3:self.retorna_estoque}
-        continua = True
-        while continua:
-            try:
-                opcao_escolhida = self.__tela_vacina.menu_vacina()
-                if 1 <= opcao_escolhida and opcao_escolhida <= 3:
-                    lista_opcoes[opcao_escolhida]()
-                elif opcao_escolhida == 0:
-                    continua = False
-                else:
-                    raise ValueError
-            except ValueError:
-                wait = input("Opção inválida, digite um número de 0 a 3. Pressione Enter para continuar...")
-                os.system('cls' if os.name == 'nt' else 'clear')
+        while True:
+            valor_lido = self.__tela_vacina.menu_vacina()
+            if valor_lido == 0 or valor_lido == None:
+                break
+            else:
+                lista_opcoes[valor_lido]()
+
 
 
 

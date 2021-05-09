@@ -70,16 +70,17 @@ class TelaPaciente:
             selecionado = None #retorna None caso não existam enfermeiros cadastrados.
         return selecionado #retorna None se fechar ou voltar, '' se não selecionar nenhum e clicar em "selecionar", ou um dicionario com o nome e codigo do enfermeiro selecionado.
 
-    def le_codigo(self):
-        codigo = None
-        try:
-            codigo = int(input("Digite o código do paciente: "))
-        except:
-            print ("Codigo deve ser um numero inteiro!")
-        return codigo
+#Podemos excluir
+#    def le_codigo(self):
+#        codigo = None
+#        try:
+#            codigo = int(input("Digite o código do paciente: "))
+#        except:
+#            print ("Codigo deve ser um numero inteiro!")
+#        return codigo
     
     def mostra_pacientes(self, lista_pacientes):
-        if lista_pacientes is not None: #só cria a string caso existam enfermeiros...
+        if lista_pacientes is not None: #só cria a string caso existam pacientes...
             big_string = ''
             for paciente in lista_pacientes:
                 big_string =  str(big_string) + '\nCódigo: ' + str(paciente['codigo']) + '\n' + 'Nome: ' + str(paciente['nome']) + '\n' + 'Idade: ' + str(paciente['idade']) + '\n--------------------------' #gambiarra mas é o que temos.
