@@ -55,6 +55,12 @@ class ControladorVacina:
                 mensagem = 'Vacina encontrada. \n Existem ' + str(quantidade_inicial) + ' doses desta vacina no estoque. Informe a quantidade que deseja remover'
                 self.__tela_vacina.mensagem(mensagem)
                 quantidade = self.__tela_vacina.ler_quantidade()
+                try:
+                    int(quantidade)
+                    if quantidade < 0:
+                        raise ValueError
+                except ValueError:
+                    self.__tela_vacina.mensagem('A quantidade deve ser um número inteiro positivo.')
                 if quantidade is not None:
                     while quantidade_inicial < quantidade:
                         mensagem = 'Informe uma quantidade igual ou inferior a ' + str(quantidade_inicial)
@@ -86,22 +92,15 @@ class ControladorVacina:
 
     
     def remove_dose_aplicada_do_estoque(self,codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
-        vacina = self.encontra_vacina_por_codigo(codigo)
+        vacina = self.__vacina_DAO.get(codigo)
         vacina.quantidade -= 1
         if vacina.quantidade == 0:
             self.__vacina_DAO.remove(vacina.codigo)
         else:
             self.__vacina_DAO.update()
     
-    def encontra_vacina_por_codigo(self, codigo):
-        vacina_selecionada = None
-        for vacina in self.__vacina_DAO.get_all():
-            if vacina.codigo == codigo:
-                vacina_selecionada = vacina
-        return vacina_selecionada
-         
     def consulta_dose_estoque(self,codigo, n_doses_necessarias): #função utilizada para consultar o estoque de uma vacina específica, para saber se é possivel agendar um atendimento de primeira ou segunda dose
-        vacina = self.encontra_vacina_por_codigo(codigo)
+        vacina = self.__vacina_DAO.get(codigo)
         n_estoque = vacina.quantidade
         if n_estoque >= n_doses_necessarias:
             return True

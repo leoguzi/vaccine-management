@@ -72,11 +72,13 @@ class ControladorPacientes():
     def vacina_paciente(self,codigo):
         paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
         try:
-            paciente_vacinado.numero_doses <= 2
+            if paciente_vacinado.numero_doses < 2:
+                paciente_vacinado.numero_doses += 1
+            else:
+                raise Exception
         except:
-            self.__tela_paciente.mensagem("Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.")
-        else:
-            paciente_vacinado.numero_doses += 1
+            mensagem = 'Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.'
+            self.__tela_paciente.mensagem(mensagem)
 
     def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None caso não exista nenhum cadastrado.
         try: 
