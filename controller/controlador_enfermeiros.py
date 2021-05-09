@@ -87,20 +87,14 @@ class ControladorEnfermeiros():
             self.__tela_enfermeiros.mensagem(mensagem)
         return lista_enfermeiros 
 
-    def encontra_enfermeiro_por_codigo(self, codigo): #provavelmente não vai mais ser usada
-        enfermeiro = None
-        while enfermeiro is None:
-            for i in range(len(self.__enfermeiros)):
-                if self.__enfermeiros[i].codigo == codigo:
-                    enfermeiro = self.__enfermeiros[i]
-                    return enfermeiro
-            print("\nEnfermeiro não encontrado. Informe um código válido.\n")
-            codigo = self.__tela_enfermeiros.le_codigo()
+    def encontra_enfermeiro_por_codigo(self, codigo):
+        enfermeiro_selecionado = None
+        for enfermeiro in self.__enfermeiro_DAO.get_all():
+            if enfermeiro.codigo == codigo:
+                enfermeiro_selecionado = enfermeiro
+        return enfermeiro_selecionado
 
-    def retorna_codigo_lido(self): #provavelmente não vai mais ser usada
-        codigo = self.__tela_enfermeiros.le_codigo()
-        return codigo
-    
+  
     def mostra_enfermeiros(self): #abre a tela que lista os enfermeiros
 
         self.__tela_enfermeiros.mostra_enfermeiros(self.lista_enfermeiros())

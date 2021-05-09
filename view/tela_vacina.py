@@ -39,8 +39,8 @@ class TelaVacina():
         self.__window.Close()
         return retorno
     
-    #funcao anterior utilizada para leo o codigo e selecionar uma vacina
-    #não é mais necessária, podemos excluir depois
+    #funcao anterior utilizada para ler o codigo e selecionar uma vacina
+    #não é mais necessária, pois agora o usuário seleciona diretamente a vacina
     #def ler_codigo(self):
     #    codigo = int(input("Código: "))
     #    return codigo

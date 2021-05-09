@@ -10,3 +10,7 @@ class NenhumSelecionadoException(Exception):
     def __init__(self, texto):
         super().__init__('Voce deve selecnionar um(a) ' + texto + " antes de continuar!")
 
+class VacinaIndisponivelException(Exception):
+    def __init__(self):
+        super().__init__('Não foi possível cadastrar este agendamento pois não há doses suficientes de vacina disponível')
+

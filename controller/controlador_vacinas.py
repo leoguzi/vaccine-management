@@ -55,6 +55,12 @@ class ControladorVacina:
                 mensagem = 'Vacina encontrada. \n Existem ' + str(quantidade_inicial) + ' doses desta vacina no estoque. Informe a quantidade que deseja remover'
                 self.__tela_vacina.mensagem(mensagem)
                 quantidade = self.__tela_vacina.ler_quantidade()
+                try:
+                    int(quantidade)
+                    if quantidade < 0:
+                        raise ValueError
+                except ValueError:
+                    self.__tela_vacina.mensagem('A quantidade deve ser um número inteiro positivo.')
                 if quantidade is not None:
                     while quantidade_inicial < quantidade:
                         mensagem = 'Informe uma quantidade igual ou inferior a ' + str(quantidade_inicial)

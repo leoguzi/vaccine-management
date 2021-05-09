@@ -88,23 +88,23 @@ class ControladorPacientes():
                     self.__paciente_DAO.update()
    
     def encontra_paciente_por_codigo(self, codigo):
-        paciente = None
-        while paciente is None:
-            for i in range(len(self.__pacientes)):
-                if self.__pacientes[i].codigo == codigo:
-                    paciente = self.__pacientes[i]
-                    return paciente
-            print("\nPaciente não encontrado.\n")
-            codigo = self.__tela_paciente.le_codigo()
+        paciente_selecionado = None
+        for paciente in self.__paciente_DAO.get_all():
+            if paciente.codigo == codigo:
+                paciente_selecionado = paciente
+        return paciente_selecionado
+
     
     def vacina_paciente(self,codigo):
         paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
         try:
-            paciente_vacinado.numero_doses <= 2
+            if paciente_vacinado.numero_doses < 2:
+                paciente_vacinado.numero_doses += 1
+            else:
+                raise Exception
         except:
-            print("\nNão é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.\n")
-        else:
-            paciente_vacinado.numero_doses += 1
+            mensagem = 'Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.'
+            self.__tela_paciente.mensagem(mensagem)
 
     def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None caso não exista nenhum cadastrado.
         try: 
