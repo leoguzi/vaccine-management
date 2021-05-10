@@ -71,9 +71,9 @@ class ControladorPacientes():
    
     def encontra_paciente_por_codigo(self, codigo):
         return self.__paciente_DAO.get(codigo)
-
-    def vacina_paciente(self, codigo):
-        paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
+    
+    def vacina_paciente(self,codigo):
+        paciente_vacinado = self.__paciente_DAO.get(codigo)
         try:
             if paciente_vacinado.numero_doses < 2:
                 paciente_vacinado.numero_doses += 1
