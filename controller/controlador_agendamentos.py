@@ -58,19 +58,19 @@ class ControladorAgendamento():
                         self.__tela_agendamento.mensagem(mensagem)
             except ListaVaziaException as mensagem:
                 self.__tela_agendamento.mensagem(mensagem)
-        if dados_agendamento is not None:
+        if dados_agendamento is not None and dados_agendamento['paciente'] != '' and dados_agendamento['enfermeiro'] != '' and dados_agendamento['data'] != '' and dados_agendamento['hora'] != '':
             codigo_paciente = int(dados_agendamento['paciente'].split(' ')[0])
             codigo_enfermeiro = int(dados_agendamento['enfermeiro'].split(' ')[0])
             data_hora = str(dados_agendamento['data']) + ' - ' + str(dados_agendamento['hora'])
             paciente = self.__controlador_paciente.encontra_paciente_por_codigo(codigo_paciente)
             enfermeiro = self.__controlador_enfermeiro.encontra_enfermeiro_por_codigo(codigo_enfermeiro)
             agendamento_existente = False
-            if len(self.__agendamento_DAO.get_all()) > 0:
+            if len(self.lista_todos_agendamentos()) > 0:
                 for agendamento in self.__agendamento_DAO.get_all():
                     if (paciente == agendamento.paciente and agendamento.conclusao == True):
                         n_doses += 1
                     if (paciente == agendamento.paciente and agendamento.conclusao == False):
-                        if dados_anteriores == None:
+                        if dados_anteriores is None:
                             agendamento_existente = True
             if agendamento_existente == False:
                 if n_doses >= 0 and n_doses < 2:
@@ -90,6 +90,8 @@ class ControladorAgendamento():
                             vacina = self.__controlador_vacina.encontra_vacina_por_codigo(codigo_da_vacina)
                             dose = 1
                             n_doses_necessarias = 2
+                        else:
+                            vacina = None
                     if n_doses == 1:
                         agendamento = self.encontra_agendamento_por_paciente(paciente) 
                         vacina = agendamento.vacina
@@ -118,6 +120,7 @@ class ControladorAgendamento():
         for agendamento in self.__agendamento_DAO.get_all():
             if agendamento.paciente == paciente:
                 agendamento_selecionado = agendamento
+        self.__tela_agendamento.mensagem(agendamento_selecionado)
         return agendamento_selecionado
 
     def escolher_agendamento(self, lista):
