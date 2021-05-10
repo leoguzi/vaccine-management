@@ -151,13 +151,19 @@ class ControladorAgendamento():
             self.__agendamento_DAO.remove(codigo)
     
     def lista_agendamentos(self):
-        opcoes_de_lista = {1: self.mostra_agendamentos_em_aberto, 2: self.mostra_agendamentos_concluidos, 3: self.mostra_todos_agendamentos}
-        while True:
-            valor_lido = self.__tela_agendamento.selecionar_lista_agendamentos()
-            if valor_lido == 0 or valor_lido == None:
-                break
+        try:
+            if len(self.lista_todos_agendamentos()) == 0:
+                raise ListaVaziaException('agendamento')
             else:
-                opcoes_de_lista[valor_lido]()
+                opcoes_de_lista = {1: self.mostra_agendamentos_em_aberto, 2: self.mostra_agendamentos_concluidos, 3: self.mostra_todos_agendamentos}
+                while True:
+                    valor_lido = self.__tela_agendamento.selecionar_lista_agendamentos()
+                    if valor_lido == 0 or valor_lido == None:
+                        break
+                    else:
+                        opcoes_de_lista[valor_lido]()
+        except ListaVaziaException as mensagem:
+            self.__tela_agendamento.mensagem(mensagem)
 
     def lista_todos_agendamentos(self):
         lista_agendamentos=[]
@@ -182,10 +188,22 @@ class ControladorAgendamento():
                 lista_agendamentos_em_concluidos.append(dados_agendamentos)
     
     def mostra_agendamentos_concluidos(self):
-        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_concluidos())
+        try:
+            if len(self.lista_agendamentos_concluidos()) == 0:
+                raise ListaVaziaException('agendamento concluído')
+            else:
+                self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_concluidos())
+        except ListaVaziaException as mensagem:
+            self.__tela_agendamento.mensagem(mensagem)
 
     def mostra_agendamentos_em_aberto(self):
-        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_em_aberto())
+        try:
+            if len(self.lista_agendamentos_em_aberto()) == 0:
+                raise ListaVaziaException('agendamento em aberto')
+            else:
+                self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_em_aberto())
+        except ListaVaziaException as mensagem:
+            self.__tela_agendamento.mensagem(mensagem)
 
     def mostra_todos_agendamentos(self):
         self.__tela_agendamento.listar_agendamentos(self.lista_todos_agendamentos())
