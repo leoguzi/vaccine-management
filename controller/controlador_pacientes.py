@@ -31,10 +31,11 @@ class ControladorPacientes():
                     raise CampoEmBrancoException #exceção para quando não digitar algum dos dados e clicar em cadastrar
                 else:
                     try:
-                        int(dados['idade'])
+                        if int(dados['idade']) < 25 or int(dados['idade']) > 150:
+                            raise ValueError
                         break
                     except ValueError:
-                        self.__tela_paciente.mensagem('A idade deve ser um numero inteiro!') 
+                        self.__tela_paciente.mensagem('A idade deve ser um numero inteiro entre 25 e 150!') 
             except CampoEmBrancoException as mensagem:
                 self.__tela_paciente.mensagem(mensagem)
         if dados is not None: #somente cadastra o novo paciente caso a janela não tenha sido fechada a ou clicado em voltar.
