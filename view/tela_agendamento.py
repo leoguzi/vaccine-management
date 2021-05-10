@@ -34,7 +34,7 @@ class TelaAgendamento():
                 cod_nome = str(enfermeiro['codigo']) + ' - ' + str(enfermeiro['nome'])
                 dados_enfermeiros.append(cod_nome) #cria lista com dados dos enfermeiros para criar o combobox
             layout = [
-                [sg.Txt('Selecione os campos para adicionar o agendamento')],
+                [sg.Txt('Selecione os campos para adicionar ou editar o agendamento')],
                 [sg.Txt('Paciente: '), sg.InputCombo(dados_pacientes, key = '-dados_paciente-')],
                 [sg.Txt('Enfermeiro: '), sg.InputCombo(dados_enfermeiros, key = '-dados_enfermeiro-')],
                 [sg.Txt('Data (DD/MM/AAA): '), sg.InputText(key = '-data-')],
