@@ -9,6 +9,7 @@ from view.tela_vacina import TelaVacina
 from controller.controlador_agendamentos import ControladorAgendamento
 from view.tela_agendamento import TelaAgendamento
 from view.tela_sistema import TelaSistema
+from controller.excecoes import ListaVaziaException
 
 class ControladorSistema():
     def __init__(self, tela_sistema: TelaSistema):
@@ -29,8 +30,23 @@ class ControladorSistema():
                     lista_opcoes[valor_lido]()
              
     def listar_atendimentos_enfermeiro(self):
-        enfermeiro = self.__controlador_enfermeiros.seleciona_enfermeiro()
-        #continuar aqui
+        while True:
+            codigo_enfermeiro = self.__controlador_enfermeiros.seleciona_enfermeiro()
+            if codigo_enfermeiro is None:
+                break
+            else:
+                atendimentos_enfermeiro = []
+                for agendamento in self.__controlador_agendamento.lista_agendamentos_concluidos():
+                    if int(agendamento["codigo_enfermeiro"]) == codigo_enfermeiro:
+                        atendimentos_enfermeiro.append(agendamento)
+            try:
+                if len(atendimentos_enfermeiro)>0:
+                    self.__controlador_agendamento.mostra_atendimentos_enfermeiro(atendimentos_enfermeiro)
+                    break
+                else:
+                    raise ListaVaziaException("atendimento para o enfermeiro selecionado")
+            except ListaVaziaException as mensagem:
+                self.__tela_sistema.mensagem(mensagem)
             
     def gera_relatorio(self):
         lista_pacientes = self.__controlador_pacientes.lista_pacientes()

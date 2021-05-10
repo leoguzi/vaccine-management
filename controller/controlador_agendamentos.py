@@ -1,4 +1,3 @@
-import os
 import sys
 sys.path.append(".")
 from controller.controlador_enfermeiros import ControladorEnfermeiros
@@ -126,7 +125,6 @@ class ControladorAgendamento():
             except ListaVaziaException as mensagem:
                 self.__tela_agendamento.mensagem(mensagem)
             return codigo
-
     
     def edita_agendamento(self):
         codigo = self.escolher_agendamento(self.lista_agendamentos_em_aberto)
@@ -184,9 +182,10 @@ class ControladorAgendamento():
         lista_agendamentos_concluidos=[]
         for agendamento in self.__agendamento_DAO.get_all():
             if agendamento.conclusao == True:
-                dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
-                lista_agendamentos_em_concluidos.append(dados_agendamentos)
-    
+                dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro": agendamento.enfermeiro.nome, "codigo_enfermeiro": agendamento.enfermeiro.codigo, "vacina": agendamento.vacina.tipo, "data_hora": agendamento.data_hora, "codigo": agendamento.codigo, "conclusao": agendamento.conclusao}
+                lista_agendamentos_concluidos.append(dados_agendamentos)
+        return lista_agendamentos_concluidos
+            
     def mostra_agendamentos_concluidos(self):
         try:
             if len(self.lista_agendamentos_concluidos()) == 0:
@@ -207,6 +206,9 @@ class ControladorAgendamento():
 
     def mostra_todos_agendamentos(self):
         self.__tela_agendamento.listar_agendamentos(self.lista_todos_agendamentos())
+    
+    def mostra_atendimentos_enfermeiro(self, atendimentos):
+        self.__tela_agendamento.listar_agendamentos(atendimentos, 'atendimentos do(a) enfermeiro(a)' + str(atendimentos[0]['enfermeiro']) + ': ')
     
     def concluir_agendamento(self):
         codigo = self.escolher_agendamento(self.lista_agendamentos_em_aberto())

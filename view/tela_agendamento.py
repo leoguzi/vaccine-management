@@ -1,4 +1,3 @@
-import os
 import sys
 sys.path.append(".")
 import PySimpleGUI as sg
@@ -108,22 +107,20 @@ class TelaAgendamento():
             selecionado = None #retorna None caso não existam vacinas cadastradas.
         return selecionado #retorna None se fechar ou voltar, '' se não selecionar nenhum e clicar em "selecionar", ou o código da vacina selecionada.
 
-
-    def listar_agendamentos(self,lista_agendamentos):
+    def listar_agendamentos(self, lista_agendamentos, texto = 'agendamentos:'):
         if lista_agendamentos is not None: #só cria a string caso existam vacinas cadastradas...
             big_string = ''
             for agendamento in lista_agendamentos:
                 big_string =  str(big_string) + '\nCódigo: ' + str(agendamento['codigo']) + '\n' + 'Paciente: ' + str(agendamento['paciente']) + '\n' + 'Enfermeiro: ' + str(agendamento['enfermeiro']) + '\n' + 'Vacina: ' + str(agendamento['vacina']) + '\n' + 'Data e Hora: ' + str(agendamento['data_hora']) + '\n' + 'Conclusão: ' + str(agendamento['conclusao']) + '\n--------------------------' #cria uma string com todas as vacinas do estoque para poder mostrar na tela
                 #big_string =  str(big_string) + '\nCódigo: ' + str(agendamento['codigo']) + '\n' + 'Vacina: ' + str(agendamento['vacina']) + '\n' + 'Data e Hora: ' + str(agendamento['data_hora']) + '\n' + 'Conclusão: ' + str(agendamento['conclusao']) + '\n--------------------------'
             layout = [
-                [sg.Txt('Lista de agendamentos:')],
+                [sg.Txt('Lista de ' + texto)],
                 [sg.Txt(big_string)],
                 [sg.Exit('Ok', size = (20, 1))]
                 ]
             self.__window = sg.Window("Lista de agendamentos").Layout(layout)
             button, values = self.__window.Read()
             self.__window.Close()
-
     
     def selecionar_lista_agendamentos(self):
         layout = [

@@ -1,4 +1,3 @@
-import os
 import sys
 sys.path.append(".")
 from model.vacina import Vacina
@@ -89,15 +88,17 @@ class ControladorVacina:
 
     def retorna_estoque(self): #função utilizada para retornar todo o estoque de vacinas do posto
         self.__tela_vacina.listar_vacinas(self.lista_vacinas())
-
     
-    def remove_dose_aplicada_do_estoque(self,codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
-        vacina = self.__vacina_DAO.get(codigo)
-        vacina.quantidade -= 1
-        if vacina.quantidade == 0:
-            self.__vacina_DAO.remove(vacina.codigo)
-        else:
-            self.__vacina_DAO.update()
+    def remove_dose_aplicada_do_estoque(self, codigo): #função utilizada para remover uma dose do estoque sempre que um agendamento eh concluído
+        try:
+            vacina = self.__vacina_DAO.get(codigo)
+            vacina.quantidade -= 1
+            if vacina.quantidade == 0:
+                self.__vacina_DAO.remove(vacina.codigo)
+            else:
+                self.__vacina_DAO.update()
+        except KeyError:
+            self.__tela_vacina.mensagem("Vacina não encontrada no estoque! Impossivel aplicar!")
     
     def consulta_dose_estoque(self,codigo, n_doses_necessarias): #função utilizada para consultar o estoque de uma vacina específica, para saber se é possivel agendar um atendimento de primeira ou segunda dose
         vacina = self.__vacina_DAO.get(codigo)

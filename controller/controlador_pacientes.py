@@ -81,8 +81,7 @@ class ControladorPacientes():
             else:
                 raise Exception
         except:
-            mensagem = 'Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.'
-            self.__tela_paciente.mensagem(mensagem)
+            self.__tela_paciente.mensagem('Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.')
 
     def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None caso não exista nenhum cadastrado.
         try: 
