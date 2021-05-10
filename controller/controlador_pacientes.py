@@ -72,18 +72,16 @@ class ControladorPacientes():
     def encontra_paciente_por_codigo(self, codigo):
         return self.__paciente_DAO.get(codigo)
 
-
-    
-    def vacina_paciente(self,codigo):
+    def vacina_paciente(self, codigo):
         paciente_vacinado = self.encontra_paciente_por_codigo(codigo)
         try:
             if paciente_vacinado.numero_doses < 2:
                 paciente_vacinado.numero_doses += 1
+                self.__paciente_DAO.update()
             else:
                 raise Exception
         except:
-            mensagem = 'Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.'
-            self.__tela_paciente.mensagem(mensagem)
+            self.__tela_paciente.mensagem('Não é possível concluir este agendamento. O paciente já recebeu duas doses de vacina.')
 
     def lista_pacientes(self): #retorna uma lista de dicionarios contendo as informações dos pacientes ou None caso não exista nenhum cadastrado.
         try: 

@@ -1,4 +1,3 @@
-import os
 import sys
 sys.path.append(".")
 from controller.controlador_enfermeiros import ControladorEnfermeiros
@@ -99,7 +98,6 @@ class ControladorAgendamento():
             if agendamento.paciente == paciente:
                 agendamento_selecionado = agendamento
         return agendamento_selecionado
-
     
     def edita_agendamento(self):
         if len(self.__agendamento_DAO.get_all()) == 0:
@@ -138,8 +136,6 @@ class ControladorAgendamento():
         lista_agendamentos=[]
         for agendamento in self.__agendamento_DAO.get_all():
             dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
-            #dados_agendamentos = {"paciente": agendamento.paciente, "enfermeiro":agendamento.enfermeiro,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
-            #dados_agendamentos = {"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
             lista_agendamentos.append(dados_agendamentos)
         return lista_agendamentos
 
@@ -155,17 +151,21 @@ class ControladorAgendamento():
         lista_agendamentos_concluidos=[]
         for agendamento in self.__agendamento_DAO.get_all():
             if agendamento.conclusao == True:
-                dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro":agendamento.enfermeiro.nome,"vacina":agendamento.vacina.tipo, "data_hora":agendamento.data_hora,"codigo":agendamento.codigo,"conclusao":agendamento.conclusao}
-                lista_agendamentos_em_concluidos.append(dados_agendamentos)
-    
+                dados_agendamentos = {"paciente": agendamento.paciente.nome, "enfermeiro": agendamento.enfermeiro.nome, "codigo_enfermeiro": agendamento.enfermeiro.codigo, "vacina": agendamento.vacina.tipo, "data_hora": agendamento.data_hora, "codigo": agendamento.codigo, "conclusao": agendamento.conclusao}
+                lista_agendamentos_concluidos.append(dados_agendamentos)
+        return lista_agendamentos_concluidos
+            
     def mostra_agendamentos_concluidos(self):
-        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_concluidos())
+        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_concluidos(), "agendamentos concluidos:")
 
     def mostra_agendamentos_em_aberto(self):
-        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_em_aberto())
+        self.__tela_agendamento.listar_agendamentos(self.lista_agendamentos_em_aberto(), "agendamentos em aberto:")
 
     def mostra_todos_agendamentos(self):
         self.__tela_agendamento.listar_agendamentos(self.lista_todos_agendamentos())
+    
+    def mostra_atendimentos_enfermeiro(self, atendimentos):
+        self.__tela_agendamento.listar_agendamentos(atendimentos, 'atendimentos do(a) enfermeiro(a)' + str(atendimentos[0]['enfermeiro']) + ': ')
     
     def concluir_agendamento(self):
         try:

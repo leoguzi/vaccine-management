@@ -22,9 +22,6 @@ class TelaSistema():
         opcao = button
         return opcao
     
-    def motra_atendimento_enfermeiro(self):
-        pass
-    
     def mostra_relatorio(self, relatorio):
         layout = [
             [sg.Txt('=====RELATÓRIO GERENCIAL=====', size = (50,1), justification = 'c')],
@@ -36,5 +33,14 @@ class TelaSistema():
         ]
         self.__window = sg.Window('Relatório').Layout(layout)
         button, values = self.__window.Read()
+        self.__window.Close()
+    
+    def mensagem(self, mensagem: str): #função para exibir avisos na tela.
+        layout = [
+            [sg.Txt(mensagem)],
+            [sg.Exit('Ok', size = (20, 1))]
+        ]
+        self.__window = sg.Window('Aviso!', element_justification = 'c').Layout(layout)
+        buttons, values = self.__window.Read()
         self.__window.Close()
         
