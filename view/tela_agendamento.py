@@ -23,7 +23,7 @@ class TelaAgendamento():
         opcao = button
         return opcao
     
-    def seleciona_dados(self, lista_pacientes, lista_enfermeiros):
+    def seleciona_dados(self, lista_pacientes, lista_enfermeiros, dados_anteriores = None):
         if lista_pacientes is not None and lista_enfermeiros is not None: #só cria a combobox se existirem pacientes, enfermeiros e vacinas já cadastrados
             dados_pacientes = []
             for paciente in lista_pacientes:
@@ -33,14 +33,24 @@ class TelaAgendamento():
             for enfermeiro in lista_enfermeiros:
                 cod_nome = str(enfermeiro['codigo']) + ' - ' + str(enfermeiro['nome'])
                 dados_enfermeiros.append(cod_nome) #cria lista com dados dos enfermeiros para criar o combobox
-            layout = [
-                [sg.Txt('Selecione os campos para adicionar ou editar o agendamento')],
-                [sg.Txt('Paciente: '), sg.InputCombo(dados_pacientes, key = '-dados_paciente-')],
-                [sg.Txt('Enfermeiro: '), sg.InputCombo(dados_enfermeiros, key = '-dados_enfermeiro-')],
-                [sg.Txt('Data (DD/MM/AAA): '), sg.InputText(key = '-data-')],
-                [sg.Txt('Hora (hh:mm): '), sg.InputText(key = '-hora-')],
-                [sg.ReadButton('Agendar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
-            ]
+            if dados_anteriores is None:
+                layout = [
+                    [sg.Txt('Selecione os campos para adicionar ou editar o agendamento')],
+                    [sg.Txt('Paciente: '), sg.InputCombo(dados_pacientes, key = '-dados_paciente-')],
+                    [sg.Txt('Enfermeiro: '), sg.InputCombo(dados_enfermeiros, key = '-dados_enfermeiro-')],
+                    [sg.Txt('Data (DD/MM/AAA): '), sg.InputText(key = '-data-')],
+                    [sg.Txt('Hora (hh:mm): '), sg.InputText(key = '-hora-')],
+                    [sg.ReadButton('Agendar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
+                ]
+            if dados_anteriores is not None:
+                layout = [
+                    [sg.Txt('Selecione os campos para adicionar ou editar o agendamento')],
+                    [sg.Txt('Paciente: '), sg.InputCombo(dados_pacientes, default_value = dados_anteriores['paciente'], key = '-dados_paciente-')],
+                    [sg.Txt('Enfermeiro: '), sg.InputCombo(dados_enfermeiros, default_value = dados_anteriores['enfermeiro'], key = '-dados_enfermeiro-')],
+                    [sg.Txt('Data (DD/MM/AAA): '), sg.InputText(dados_anteriores['data'], key = '-data-')],
+                    [sg.Txt('Hora (hh:mm): '), sg.InputText(dados_anteriores['hora'], key = '-hora-')],
+                    [sg.ReadButton('Agendar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
+                ]
             self.__window = sg.Window("Cadastro de Agendamento").Layout(layout)
             button, values = self.__window.Read()
             self.__window.Close()
@@ -55,18 +65,26 @@ class TelaAgendamento():
             selecionado = None #retorna None caso não existam pacientes ou enfermeiros cadastrados.
         return selecionado #retorna None se fechar ou voltar, '' se não selecionar nenhum e clicar em "selecionar", ou o dicionário com as informações selecionadas.
 
-    def selecionar_vacina(self, lista_vacinas):
+    def selecionar_vacina(self, lista_vacinas, dados_anteriores = None):
         if lista_vacinas is not None: #só cria a combobox se existirem vacinas
             dados_vacinas = []
             for vacina in lista_vacinas:
                 cod_tipo_fabricante = str(vacina['codigo']) + ' - ' + str(vacina['tipo']) + ' - ' + str(vacina['fabricante'])
                 dados_vacinas.append(cod_tipo_fabricante) #cria lista de dados da vacina para criar o combobox
-            layout = [
-                [sg.Txt('Selecione a vacina desejada.')],
-                [sg.Txt('Codigo - Tipo - Fabricante')],
-                [sg.InputCombo(dados_vacinas, key = '-dados_vacinas-')],
-                [sg.ReadButton('Selecionar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
-            ]
+            if dados_anteriores is not None:
+                layout = [
+                    [sg.Txt('Selecione a vacina desejada.')],
+                    [sg.Txt('Codigo - Tipo - Fabricante')],
+                    [sg.InputCombo(dados_vacinas, default_value = dados_anteriores['vacina'], key = '-dados_vacinas-')],
+                    [sg.ReadButton('Selecionar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
+                ]
+            if dados_anteriores is None:
+                layout = [
+                    [sg.Txt('Selecione a vacina desejada.')],
+                    [sg.Txt('Codigo - Tipo - Fabricante')],
+                    [sg.InputCombo(dados_vacinas, key = '-dados_vacinas-'), ],
+                    [sg.ReadButton('Selecionar', size = (20, 1)), sg.ReadButton('Voltar', size = (20, 1))]
+                ]
             self.__window = sg.Window("Seleção de Vacina").Layout(layout)
             button, values = self.__window.Read()
             self.__window.Close()

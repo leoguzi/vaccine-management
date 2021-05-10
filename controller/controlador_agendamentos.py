@@ -27,11 +27,11 @@ class ControladorAgendamento():
                     codigo = agendamento.codigo
             self.__gera_codigo = codigo + 1
         
-    def inserir_novo_agendamento(self):
+    def inserir_novo_agendamento(self, dados_anteriores = None): #recebe None ou os dados do agendamento a ser editado
         n_doses = 0
         while True:
             try:
-                dados_agendamento = self.__tela_agendamento.seleciona_dados(self.__controlador_paciente.lista_pacientes(),self.__controlador_enfermeiro.lista_enfermeiros())
+                dados_agendamento = self.__tela_agendamento.seleciona_dados(self.__controlador_paciente.lista_pacientes(),self.__controlador_enfermeiro.lista_enfermeiros(), dados_anteriores)
                 if dados_agendamento == None:
                     break
                 if len(self.__controlador_paciente.lista_pacientes()) == 0:
@@ -61,7 +61,7 @@ class ControladorAgendamento():
         if dados_agendamento is not None:
             codigo_paciente = int(dados_agendamento['paciente'].split(' ')[0])
             codigo_enfermeiro = int(dados_agendamento['enfermeiro'].split(' ')[0])
-            data_hora = str(dados_agendamento['data']) + str(dados_agendamento['hora'])
+            data_hora = str(dados_agendamento['data']) + ' - ' + str(dados_agendamento['hora'])
             paciente = self.__controlador_paciente.encontra_paciente_por_codigo(codigo_paciente)
             enfermeiro = self.__controlador_enfermeiro.encontra_enfermeiro_por_codigo(codigo_enfermeiro)
             agendamento_existente = False
@@ -70,13 +70,14 @@ class ControladorAgendamento():
                     if (paciente == agendamento.paciente and agendamento.conclusao == True):
                         n_doses += 1
                     if (paciente == agendamento.paciente and agendamento.conclusao == False):
-                        agendamento_existente = True
+                        if dados_anteriores == None:
+                            agendamento_existente = True
             if agendamento_existente == False:
                 if n_doses >= 0 and n_doses < 2:
                     if n_doses == 0:
                         while True:
                             try:
-                                codigo_da_vacina = self.__tela_agendamento.selecionar_vacina(self.__controlador_vacina.lista_vacinas())
+                                codigo_da_vacina = self.__tela_agendamento.selecionar_vacina(self.__controlador_vacina.lista_vacinas(), dados_anteriores)
                                 if codigo_da_vacina is None:
                                     break
                                 if codigo_da_vacina == '':
@@ -141,15 +142,19 @@ class ControladorAgendamento():
         return codigo
     
     def edita_agendamento(self):
-        while True:
-            try:
-                if len(self.lista_agendamentos_em_aberto()) == 0:
-                    raise ListaVaziaException('agendamentos em aberto')
-                else:
+        try:
+            if len(self.lista_agendamentos_em_aberto()) == 0:
+                raise ListaVaziaException('agendamentos em aberto')
+            else:
+                while True:
                     codigo = self.escolher_agendamento(self.lista_agendamentos_em_aberto())
                     if codigo is not None and codigo != 0:
                         agendamento_selecionado = self.__agendamento_DAO.get(codigo)
-                        agendamento_auxiliar = self.inserir_novo_agendamento()
+                        paciente_atual = str(agendamento_selecionado.paciente.codigo) + ' - ' + str(agendamento_selecionado.paciente.nome)
+                        enfermeiro_atual = str(agendamento_selecionado.enfermeiro.codigo) + ' - ' + str(agendamento_selecionado.enfermeiro.nome)
+                        vacina_atual = str(agendamento_selecionado.vacina.codigo) + ' - ' + str(agendamento_selecionado.vacina.tipo) + ' - ' + str(agendamento_selecionado.vacina.fabricante)
+                        dados_atuais = {'paciente': paciente_atual, 'enfermeiro': enfermeiro_atual, 'data': agendamento_selecionado.data_hora.split(' - ')[0], 'hora': agendamento_selecionado.data_hora.split(' - ')[1], 'vacina': vacina_atual}
+                        agendamento_auxiliar = self.inserir_novo_agendamento(dados_atuais)
                         if agendamento_auxiliar is None:
                             break
                         else:
@@ -159,8 +164,11 @@ class ControladorAgendamento():
                             agendamento_selecionado.vacina = agendamento_auxiliar.vacina
                             self.__agendamento_DAO.remove(agendamento_auxiliar.codigo)
                             self.__agendamento_DAO.update()
-            except ListaVaziaException as mensagem:
-                self.__tela_agendamento.mensagem(mensagem)
+                            break
+                    else:
+                        break
+        except ListaVaziaException as mensagem:
+            self.__tela_agendamento.mensagem(mensagem)
 
 
 
