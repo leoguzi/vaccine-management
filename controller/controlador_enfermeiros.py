@@ -1,17 +1,23 @@
 import sys
 sys.path.append(".")
-from model.enfermeiro import Enfermeiro
-from model.enfermeiro_dao import EnfermeiroDAO
-from view.tela_enfermeiro import TelaEnfermeiros
+
+# from model.enfermeiro import Enfermeiro
+# from model.enfermeiro_dao import EnfermeiroDAO
+# from view.tela_enfermeiro import TelaEnfermeiros
+
+from model.facade import Facade
+
 from controller.excecoes import ListaVaziaException
 from controller.excecoes import CampoEmBrancoException
 from controller.excecoes import NenhumSelecionadoException
 
 class ControladorEnfermeiros():
 
-    def __init__(self, tela_enfermeiros: TelaEnfermeiros):
-        self.__tela_enfermeiros = tela_enfermeiros
-        self.__enfermeiro_DAO = EnfermeiroDAO()
+    def __init__(self, tela_enfermeiros: Facade):
+        # self.__tela_enfermeiros = tela_enfermeiros
+        # self.__enfermeiro_DAO = EnfermeiroDAO()
+
+        self.__facade = Facade()
         if len(self.__enfermeiro_DAO.get_all()) == 0:
             self.__gera_codigo = int(100) #codigo dos enfermeiros começa em 100
         else:
