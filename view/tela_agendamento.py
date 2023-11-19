@@ -55,10 +55,7 @@ class TelaAgendamento():
             button, values = self.__window.Read()
             self.__window.Close()
             if button == 'Agendar':
-                if values['-dados_paciente-'] == '' or values['-dados_enfermeiro-'] == '' or values['-data-'] == '' or values['-hora-']: #clicou em selecionar sem selecionar nenhuma vacina
-                    selecionado = {'paciente': values['-dados_paciente-'], 'enfermeiro': values['-dados_enfermeiro-'], 'data': values['-data-'], 'hora': values['-hora-']}  # retorna '' (string vazia), tratar onde esta função for utilizada.
-                else:
-                    selecionado = {'paciente': values['-dados_paciente-'], 'enfermeiro': values['-dados_enfermeiro-'], 'data': values['-data-'], 'hora': values['-hora-']}#dicionário com o código das informações selecionadas
+                selecionado = {'paciente': values['-dados_paciente-'], 'enfermeiro': values['-dados_enfermeiro-'], 'data': values['-data-'], 'hora': values['-hora-']}  # retorna '' (string vazia), tratar onde esta função for utilizada.
             if button == 'Voltar' or button == sg.WIN_CLOSED: #retorna none se a pessoa fechar a janela ou clicar em voltar. deve ser tratado onde essa função for utilizada.
                 selecionado = None
         else:
